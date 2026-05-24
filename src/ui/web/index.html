@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>teams</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f6ef7'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='system-ui,sans-serif' font-size='20' font-weight='800' fill='white'%3ET%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --radius: 0.5rem;
+  --font: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+[data-theme="dark"] {
+  --bg:#0d0e11; --bg-panel:#111318; --bg-card:#16181f; --bg-hover:#1c1f28; --bg-input:#13151b;
+  --border:#1f2230; --border-2:#262840;
+  --text:#e2e4ef; --text-2:#8b8fa8; --text-3:#555870;
+  --accent:#4f6ef7; --accent-dim:#1e2d6b; --accent-fg:#fff;
+  --green:#22c55e; --green-dim:#14532d;
+  --amber:#f59e0b; --amber-dim:#451a03;
+  --red:#ef4444; --red-dim:#450a0a;
+  --purple:#a78bfa; --purple-dim:#2e1065;
+  --teal:#2dd4bf; --shadow:0 1px 3px rgba(0,0,0,.4);
+}
+[data-theme="light"] {
+  --bg:#f9fafb; --bg-panel:#fff; --bg-card:#fff; --bg-hover:#f3f4f6; --bg-input:#fff;
+  --border:#e5e7eb; --border-2:#d1d5db;
+  --text:#111827; --text-2:#6b7280; --text-3:#9ca3af;
+  --accent:#4f6ef7; --accent-dim:#eff2ff; --accent-fg:#fff;
+  --green:#16a34a; --green-dim:#dcfce7;
+  --amber:#d97706; --amber-dim:#fef3c7;
+  --red:#dc2626; --red-dim:#fee2e2;
+  --purple:#7c3aed; --purple-dim:#ede9fe;
+  --teal:#0d9488; --shadow:0 1px 3px rgba(0,0,0,.06);
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+
+/* ── Layout ── */
+.app{display:flex;height:100vh;}
+
+/* ── Sidebar ── */
+.sidebar{width:220px;flex-shrink:0;background:var(--bg-panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width .2s;}
+.sidebar.collapsed{width:48px;cursor:pointer;}
+.sidebar-top{padding:12px 10px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.logo-brand{display:flex;flex-direction:column;gap:1px;overflow:hidden;min-width:0;}
+.logo-slogan{font-size:9.5px;color:var(--text-3);letter-spacing:.3px;white-space:nowrap;overflow:hidden;}
+.logo{width:26px;height:26px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;animation:logo-spin .8s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes logo-spin{from{transform:rotate(-180deg) scale(.4);opacity:0}to{transform:none;opacity:1}}
+.logo-text{font-size:15px;font-weight:700;letter-spacing:2px;white-space:nowrap;overflow:hidden;font-family:'Space Grotesk',var(--font);background:linear-gradient(90deg,var(--accent) 0%,var(--teal) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;}
+.sidebar-toggle{margin-left:auto;padding:4px;border-radius:4px;cursor:pointer;border:none;background:transparent;color:var(--text-3);flex-shrink:0;}
+.sidebar-toggle:hover{background:var(--bg-hover);color:var(--text-2);}
+.new-btn{margin:8px 8px 4px;padding:7px 10px;background:var(--accent);color:var(--accent-fg);border:none;border-radius:var(--radius);cursor:pointer;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;transition:opacity .15s;white-space:nowrap;overflow:hidden;}
+.new-btn:hover{opacity:.88;}
+.sidebar-section{padding:6px 6px 2px;}
+.sidebar-section-label{padding:2px 6px;font-size:10px;font-weight:600;letter-spacing:.6px;color:var(--text-3);text-transform:uppercase;white-space:nowrap;}
+.sessions-list{flex:1;overflow-y:auto;padding:4px 6px 8px;}
+.session-item{padding:5px 8px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .1s;overflow:hidden;}
+.session-item:hover{background:var(--bg-hover);}
+.session-item:hover .del-btn{opacity:1;}
+.session-item.active{background:var(--bg-hover);}
+.session-item-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;}
+.s-title{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.s-meta{font-size:10px;color:var(--text-3);}
+.del-btn{opacity:0;padding:2px 5px;background:transparent;border:none;color:var(--text-3);cursor:pointer;border-radius:3px;font-size:12px;flex-shrink:0;transition:opacity .15s,color .15s;}
+.del-btn:hover{color:var(--red);background:var(--red-dim);}
+
+/* ── Main ── */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;}
+
+/* ── Topbar ── */
+.topbar{height:46px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;background:var(--bg-panel);flex-shrink:0;}
+.topbar-title{font-size:13px;font-weight:600;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.topbar-btn{padding:4px 8px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--text-2);cursor:pointer;font-size:11px;transition:background .1s,color .1s;display:flex;align-items:center;gap:4px;}
+.topbar-btn:hover{background:var(--bg-hover);color:var(--text);}
+.topbar-btn.share-btn{border-color:var(--teal);color:var(--teal);}
+.topbar-btn.share-btn:hover{background:rgba(45,212,191,.08);}
+.topbar-btn.share-btn.copied{border-color:var(--green);color:var(--green);}
+
+/* ── Chat ── */
+.chat-wrap{flex:1;overflow:hidden;display:flex;}
+.chat{flex:1;overflow-y:auto;padding:20px 0 12px;display:flex;flex-direction:column;gap:0;}
+.msg-row{padding:4px 24px;display:flex;flex-direction:column;gap:4px;}
+.msg-row.user{align-items:flex-end;padding:6px 24px;}
+.msg-author{font-size:10px;font-weight:600;letter-spacing:.4px;display:flex;align-items:center;gap:6px;padding:0 2px;color:var(--text-3);}
+.author-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;box-shadow:0 0 0 1.5px rgba(255,255,255,.1);}
+.msg-author.running .author-dot{animation:pulse 1.5s ease infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(79,110,247,.7)}70%{box-shadow:0 0 0 6px rgba(79,110,247,0)}100%{box-shadow:0 0 0 0 rgba(79,110,247,0)}}
+/* 用户气泡 */
+.msg-content{max-width:720px;font-size:13px;line-height:1.65;}
+.msg-row.user .msg-content{
+  background:linear-gradient(135deg,var(--accent) 0%,#3a58e0 100%);
+  color:#fff;padding:9px 15px;
+  border-radius:16px 16px 3px 16px;
+  max-width:560px;
+  box-shadow:0 2px 8px rgba(79,110,247,.35);
+  font-size:13px;line-height:1.6;
+}
+/* AI 回复 */
+.msg-row.agent .msg-content{color:var(--text);white-space:pre-wrap;word-break:break-word;padding:1px 0;}
+.streaming::after{content:'▋';animation:blink .65s infinite;color:var(--accent);margin-left:2px;font-size:12px;}
+@keyframes blink{50%{opacity:0}}
+/* 工具调用 */
+.tool-use{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden;max-width:580px;margin-top:5px;font-family:var(--font-mono);font-size:11px;}
+.tool-use summary{list-style:none;padding:6px 11px;cursor:pointer;display:flex;align-items:center;gap:7px;color:var(--text-2);user-select:none;}
+.tool-use summary:hover{background:var(--bg-hover);}
+.tool-use summary::before{content:'▶';font-size:9px;color:var(--text-3);transition:transform .15s;}
+.tool-use[open] summary::before{transform:rotate(90deg);}
+.tool-use .tool-name{color:var(--teal);font-weight:600;letter-spacing:.2px;}
+.tool-use pre{padding:8px 11px;color:var(--text-2);border-top:1px solid var(--border);overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow-y:auto;font-size:10.5px;line-height:1.55;}
+/* Dispatch 卡片 */
+.plan-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;max-width:520px;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.plan-card-mode{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:2px 8px;border-radius:4px;margin-bottom:8px;}
+.plan-card-reason{font-size:12px;color:var(--text-2);line-height:1.55;margin-bottom:10px;}
+.plan-task{display:flex;align-items:flex-start;gap:9px;padding:4px 0;border-bottom:1px solid var(--border);}
+.plan-task:last-child{border-bottom:none;padding-bottom:0;}
+.plan-task-num{font-size:10px;font-weight:700;color:var(--text-3);min-width:18px;padding-top:1px;font-family:var(--font-mono);}
+.plan-task-desc{font-size:11.5px;color:var(--text);line-height:1.45;}
+/* 结果块 */
+.result-block{border:1px solid var(--border);border-radius:10px;background:var(--bg-card);padding:14px 16px;max-width:680px;box-shadow:0 1px 4px rgba(0,0,0,.2);margin-top:2px;}
+
+.sys-msg{font-size:11px;color:var(--text-3);text-align:center;padding:5px 0;}
+.sys-msg.err{color:var(--red);}
+
+/* ── Markdown ── */
+.md h1,.md h2,.md h3{font-weight:700;margin:14px 0 6px;}
+.md h1{font-size:16px;} .md h2{font-size:14px;border-bottom:1px solid var(--border);padding-bottom:4px;} .md h3{font-size:13px;color:var(--accent);}
+.md p{margin:6px 0;line-height:1.72;}
+.md ul,.md ol{margin:5px 0 5px 20px;} .md li{margin:3px 0;line-height:1.6;}
+.md code{background:var(--bg-hover);border:1px solid var(--border);padding:1px 5px;border-radius:4px;font-family:var(--font-mono);font-size:11.5px;}
+.md pre{background:var(--bg-hover);border:1px solid var(--border);border-radius:8px;padding:10px 14px;overflow-x:auto;margin:8px 0;}
+.md pre code{background:none;border:none;padding:0;font-size:12px;}
+.md table{border-collapse:collapse;width:100%;margin:8px 0;font-size:12px;}
+.md th,.md td{border:1px solid var(--border);padding:6px 10px;}
+.md th{background:var(--bg-hover);font-weight:600;color:var(--text-2);}
+.md tr:hover td{background:var(--bg-hover);}
+.md blockquote{border-left:3px solid var(--accent);padding:4px 0 4px 12px;color:var(--text-2);margin:6px 0;background:var(--accent-dim);border-radius:0 5px 5px 0;}
+.md hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
+.md strong{font-weight:700;color:var(--text);} .md em{font-style:italic;color:var(--text-2);}
+.md a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-dim);} .md a:hover{border-bottom-color:var(--accent);}
+
+/* ── Input ── */
+.input-area{padding:10px 20px 16px;border-top:1px solid var(--border);background:var(--bg-panel);}
+.input-box{background:var(--bg-input);border:1px solid var(--border-2);border-radius:12px;padding:10px 13px;display:flex;align-items:flex-end;gap:9px;transition:border-color .2s,box-shadow .2s;box-shadow:0 1px 4px rgba(0,0,0,.15);}
+.input-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim),0 1px 4px rgba(0,0,0,.15);}
+.input-box textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:13.5px;resize:none;min-height:22px;max-height:140px;line-height:1.55;font-family:var(--font);}
+.input-box textarea::placeholder{color:var(--text-3);}
+.send-btn{padding:6px 14px;background:var(--accent);color:var(--accent-fg);border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:opacity .15s,transform .1s;letter-spacing:.2px;}
+.send-btn:hover:not(:disabled){opacity:.9;transform:translateY(-1px);}
+.send-btn:active:not(:disabled){transform:translateY(0);}
+.send-btn:disabled{opacity:.35;cursor:default;}
+.stop-btn{padding:6px 13px;background:var(--red-dim);color:var(--red);border:1px solid color-mix(in srgb,var(--red) 30%,transparent);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;display:none;align-items:center;gap:5px;transition:background .15s,color .15s;white-space:nowrap;}
+.stop-btn:hover{background:var(--red);color:#fff;}
+.pause-btn{padding:6px 13px;background:var(--amber-dim);color:var(--amber);border:1px solid color-mix(in srgb,var(--amber) 30%,transparent);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;display:none;align-items:center;gap:5px;transition:background .15s,color .15s;white-space:nowrap;}
+.pause-btn:hover{background:var(--amber);color:#fff;}
+.resume-btn{padding:6px 13px;background:var(--green-dim);color:var(--green);border:1px solid color-mix(in srgb,var(--green) 30%,transparent);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;display:none;align-items:center;gap:5px;transition:background .15s,color .15s;white-space:nowrap;}
+.resume-btn:hover{background:var(--green);color:#fff;}
+.resume-btn:disabled{opacity:.45;cursor:default;}
+.supplement-bar{display:none;align-items:center;gap:6px;padding:6px 10px;background:var(--amber-dim);border:1px solid color-mix(in srgb,var(--amber) 30%,transparent);border-radius:8px;margin-top:4px;}
+.supplement-bar textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:12px;resize:none;min-height:18px;max-height:60px;line-height:1.4;font-family:var(--font);}
+.supplement-bar textarea::placeholder{color:color-mix(in srgb,var(--amber) 60%,transparent);}
+.supplement-bar-label{font-size:10px;font-weight:700;color:var(--amber);white-space:nowrap;letter-spacing:.3px;}
+.input-hint{font-size:10px;color:var(--text-3);margin-top:5px;padding-left:2px;}
+
+/* ── Panel ── */
+.panel{width:300px;flex-shrink:0;background:var(--bg-panel);border-left:1px solid var(--border);display:flex;flex-direction:column;transition:width .2s;overflow:hidden;}
+.panel.collapsed{width:0;border-left:none;}
+.panel-head{height:46px;border-bottom:1px solid var(--border);padding:0 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.panel-head-title{font-size:11px;font-weight:700;color:var(--text-2);letter-spacing:.5px;text-transform:uppercase;}
+.panel-close{background:none;border:none;color:var(--text-3);cursor:pointer;padding:4px;border-radius:4px;font-size:14px;}
+.panel-close:hover{background:var(--bg-hover);color:var(--text-2);}
+.panel-body{flex:1;overflow-y:auto;padding:10px;}
+
+/* ── Task Topology ── */
+.topo-section{margin-bottom:10px;}
+.topo-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 0;user-select:none;}
+.topo-header-title{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);}
+.topo-toggle{font-size:10px;color:var(--text-3);}
+.topo-canvas{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow-x:auto;overflow-y:hidden;display:none;width:100%;}
+.topo-section.open .topo-canvas{display:block;}
+.topo-section.open .topo-toggle{transform:rotate(180deg);}
+
+/* ── Task Queue Board ── */
+.queue-board{display:flex;flex-direction:column;gap:8px;}
+.queue-col{}
+.queue-col-header{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.queue-col-label{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.queue-col-count{font-size:10px;background:var(--bg-hover);padding:1px 5px;border-radius:10px;color:var(--text-3);}
+.col-pending .queue-col-label{color:var(--text-3);}
+.col-claimed .queue-col-label{color:var(--amber);}
+.col-done    .queue-col-label{color:var(--green);}
+.task-card{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:7px 9px;margin-bottom:5px;box-shadow:var(--shadow);transition:border-color .2s;}
+.task-card.claimed{border-color:var(--amber-dim);}
+.task-card.done{border-color:var(--green-dim);opacity:.75;}
+.task-card-head{display:flex;align-items:center;gap:6px;margin-bottom:2px;}
+.task-id{font-size:9px;color:var(--text-3);font-family:var(--font-mono);}
+.task-agent-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.2px;background:var(--amber-dim);color:var(--amber);}
+.task-status-dot{width:5px;height:5px;border-radius:50%;margin-left:auto;flex-shrink:0;}
+.dot-pending{background:var(--text-3);}
+.dot-claimed{background:var(--amber);animation:blink .8s infinite;}
+.dot-done{background:var(--green);}
+.task-desc{font-size:11px;color:var(--text-2);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.task-worker{font-size:9px;color:var(--text-3);margin-top:2px;}
+
+/* ── Team member cards ── */
+.team-section{margin-bottom:14px;}
+.team-section-label{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.team-section-label .member-count{font-size:10px;background:var(--bg-hover);padding:1px 5px;border-radius:10px;color:var(--text-3);font-weight:400;}
+
+.member-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:6px;transition:border-color .25s,box-shadow .25s;}
+.member-card.idle    {border-color:var(--border);}
+.member-card.running {border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-dim);}
+.member-card.claiming{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber-dim);animation:claim-flash .4s ease;}
+.member-card.done    {border-color:var(--green-dim);opacity:.75;}
+@keyframes claim-flash{0%{transform:scale(1)}40%{transform:scale(1.02)}100%{transform:scale(1)}}
+
+.member-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.member-avatar{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;transition:transform .2s;}
+.member-card.running .member-avatar{transform:scale(1.08);}
+.av-worker    {background:linear-gradient(135deg,#2563eb,#1d4ed8);}
+.av-merger    {background:linear-gradient(135deg,#7c3aed,#6d28d9);}
+.av-planner   {background:linear-gradient(135deg,#0891b2,#0e7490);}
+
+.member-info{flex:1;min-width:0;}
+.member-name{font-size:12px;font-weight:700;color:var(--text);}
+.member-id  {font-size:10px;color:var(--text-3);}
+.member-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;flex-shrink:0;}
+.mb-idle    {background:var(--bg-hover);color:var(--text-3);}
+.mb-running {background:var(--accent-dim);color:var(--accent);animation:shimmer 1.5s ease infinite;}
+.mb-claiming{background:var(--amber-dim);color:var(--amber);}
+.mb-done    {background:var(--green-dim);color:var(--green);}
+
+/* 当前任务条 */
+.member-task{font-size:10px;color:var(--text-2);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:4px 6px;background:var(--bg-hover);border-radius:4px;margin-top:4px;opacity:0;transform:translateY(-4px);transition:opacity .2s,transform .2s;}
+.member-card.running .member-task,.member-card.claiming .member-task{opacity:1;transform:none;}
+.member-task .task-label{color:var(--text-3);margin-right:4px;}
+
+/* 进度流 */
+.progress-stream{padding:3px 24px 6px;display:flex;flex-direction:column;gap:1px;}
+.progress-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text-3);line-height:1.6;padding:1.5px 0;animation:fadeIn .18s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.progress-item .p-icon{flex-shrink:0;font-size:9px;width:12px;text-align:center;}
+.progress-item .p-worker{color:var(--accent);font-weight:600;flex-shrink:0;font-size:10px;min-width:24px;}
+.progress-item .p-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-2);}
+.progress-item.p-claim .p-icon{color:var(--accent);}
+.progress-item.p-tool  .p-icon{color:var(--teal);}
+.progress-item.p-done  .p-icon{color:var(--green);}
+.progress-item.p-done  .p-text{color:var(--text-3);}
+
+/* 时间线 */
+.member-card{cursor:pointer;}
+.member-timeline{display:none;margin-top:8px;border-top:1px solid var(--border);padding-top:7px;}
+.member-card.expanded .member-timeline{display:block;}
+.timeline-item{display:flex;align-items:flex-start;gap:7px;padding:3px 0;font-size:10px;line-height:1.4;}
+.timeline-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.tl-claim   .timeline-dot{background:var(--accent);}
+.tl-tool    .timeline-dot{background:var(--teal);}
+.tl-done    .timeline-dot{background:var(--green);}
+.tl-add     .timeline-dot{background:var(--amber);}
+.timeline-text{color:var(--text-2);flex:1;word-break:break-word;}
+.tl-claim   .timeline-text{color:var(--accent);}
+.tl-done    .timeline-text{color:var(--green);}
+.tl-add     .timeline-text{color:var(--amber);}
+
+/* ── Worker cards (merger/planner) ── */
+.worker-section{margin-top:0;}
+.worker-section-label{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;}
+.worker-card{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:7px 9px;margin-bottom:5px;display:flex;align-items:center;gap:8px;transition:border-color .2s;}
+.worker-card.running{border-color:var(--accent);}
+.worker-card.done{border-color:var(--green-dim);opacity:.7;}
+.worker-info{flex:1;min-width:0;}
+.worker-name{font-size:11px;font-weight:600;color:var(--text);}
+.worker-status{font-size:10px;color:var(--text-3);}
+.worker-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0;}
+.wb-running{background:var(--accent-dim);color:var(--accent);animation:shimmer 1.5s ease infinite;}
+.wb-done{background:var(--green-dim);color:var(--green);}
+.wb-waiting{background:var(--bg-hover);color:var(--text-3);}
+@keyframes shimmer{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:2px;}
+
+/* ── Settings Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .15s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;width:380px;max-width:calc(100vw - 32px);box-shadow:0 8px 32px rgba(0,0,0,.4);transform:scale(.96);transition:transform .15s;}
+.modal-overlay.open .modal{transform:none;}
+.modal-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-head-title{font-size:13px;font-weight:700;color:var(--text);}
+.modal-close{background:none;border:none;color:var(--text-3);cursor:pointer;padding:4px;border-radius:4px;font-size:14px;line-height:1;}
+.modal-close:hover{background:var(--bg-hover);color:var(--text-2);}
+.modal-body{padding:16px;}
+.setting-row{margin-bottom:16px;}
+.setting-row:last-child{margin-bottom:0;}
+.setting-label{font-size:11px;font-weight:600;color:var(--text-2);letter-spacing:.3px;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.setting-label .badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:var(--accent-dim);color:var(--accent);}
+.agent-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.agent-opt{flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:var(--bg-card);}
+.agent-opt:hover{border-color:var(--border-2);background:var(--bg-hover);}
+.agent-opt.selected{border-color:var(--accent);background:var(--accent-dim);}
+.agent-opt.not-installed{opacity:.55;cursor:not-allowed;}
+.agent-opt.not-installed:hover{border-color:var(--border);background:var(--bg-card);}
+.agent-opt-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:5px;}
+.agent-opt.selected .agent-opt-name{color:var(--accent);}
+.agent-opt-not-installed-tag{font-size:9px;font-weight:600;color:var(--red);background:var(--red-dim);padding:1px 5px;border-radius:3px;white-space:nowrap;}
+.agent-opt-desc{font-size:10px;color:var(--text-3);line-height:1.4;}
+.setting-status{font-size:11px;color:var(--green);display:none;margin-top:8px;}
+.setting-status.show{display:block;}
+.setting-status.err{color:var(--red);}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <div class="logo">T</div>
+    <div class="logo-brand">
+      <span class="logo-text">teams</span>
+      <span class="logo-slogan">多智能体协作引擎</span>
+    </div>
+    <button class="sidebar-toggle" id="sidebarToggle">◀</button>
+  </div>
+  <button class="new-btn" id="newBtn"><span>＋</span><span>新会话</span></button>
+  <div class="sidebar-section"><div class="sidebar-section-label">会话</div></div>
+  <div class="sessions-list" id="sessionsList"></div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <div class="topbar">
+    <span class="topbar-title" id="topbarTitle">新任务</span>
+    <button class="topbar-btn" id="settingsBtn" title="Agent 配置">⚙</button>
+    <button class="topbar-btn" id="themeBtn">🌙</button>
+    <button class="topbar-btn share-btn" id="shareBtn" style="display:none" title="分享结果">↗ 分享</button>
+    <button class="topbar-btn" id="panelBtn">⊞ Team 看板</button>
+  </div>
+  <div class="chat-wrap">
+    <div class="chat" id="chat">
+      <div class="sys-msg" id="emptyHint">输入任务，Team 会自动选择协作模式并完成</div>
+    </div>
+  </div>
+  <div class="input-area">
+    <div class="input-box">
+      <textarea id="inputTa" placeholder="描述你的任务，Team 会自动选择最合适的协作模式..." rows="1"></textarea>
+      <button class="send-btn" id="sendBtn">发送</button>
+      <button class="pause-btn" id="pauseBtn">⏸ 暂停</button>
+      <button class="stop-btn" id="stopBtn">⏹ 终止</button>
+      <button class="resume-btn" id="resumeBtn">▶ 继续</button>
+    </div>
+    <div class="supplement-bar" id="supplementBar">
+      <span class="supplement-bar-label">补充指令</span>
+      <textarea id="supplementTa" placeholder="可选：输入补充说明，workers 恢复后会读取（留空直接继续）" rows="1"></textarea>
+    </div>
+    <div class="input-hint">Enter 发送 · Shift+Enter 换行</div>
+  </div>
+</main>
+
+<!-- Panel -->
+<aside class="panel" id="panel">
+  <div class="panel-head">
+    <span class="panel-head-title">Team 看板</span>
+    <button class="panel-close" id="panelClose">✕</button>
+  </div>
+  <div class="panel-body">
+
+    <!-- Team Members（常驻） -->
+    <div class="team-section" id="teamSection">
+      <div class="team-section-label">
+        Team Members
+        <span class="member-count" id="memberCount">0</span>
+      </div>
+      <div id="memberCards"></div>
+    </div>
+
+    <!-- Task Topology -->
+    <div class="topo-section" id="topoSection">
+      <div class="topo-header" id="topoToggle">
+        <span class="topo-header-title">任务拓扑<span id="topoModeBadge" style="font-weight:700;color:var(--accent);letter-spacing:.2px;margin-left:5px;font-size:inherit"></span></span>
+        <span class="topo-toggle">▾</span>
+      </div>
+      <div class="topo-canvas">
+        <svg id="topoSvg" width="100%" style="min-height:80px"></svg>
+      </div>
+    </div>
+
+    <!-- Task Queue Board -->
+    <div class="queue-board" id="queueBoard">
+      <div class="queue-col col-pending">
+        <div class="queue-col-header"><span class="queue-col-label">任务池</span><span class="queue-col-count" id="cnt-pending">0</span></div>
+        <div id="col-pending"></div>
+      </div>
+      <div class="queue-col col-claimed">
+        <div class="queue-col-header"><span class="queue-col-label">进行中</span><span class="queue-col-count" id="cnt-claimed">0</span></div>
+        <div id="col-claimed"></div>
+      </div>
+      <div class="queue-col col-done">
+        <div class="queue-col-header"><span class="queue-col-label">已完成</span><span class="queue-col-count" id="cnt-done">0</span></div>
+        <div id="col-done"></div>
+      </div>
+    </div>
+
+    <!-- System workers (planner/merger) -->
+    <div class="worker-section" id="workerSection">
+      <div class="worker-section-label" style="margin-top:14px">System</div>
+      <div id="workerCards"></div>
+    </div>
+
+  </div>
+</aside>
+
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-head-title">⚙ Agent 配置</span>
+      <button class="modal-close" id="settingsClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="setting-row">
+        <div class="setting-label">Agent 后端 <span class="badge" id="currentAgentBadge">claude</span></div>
+        <div class="agent-options" id="agentOptions">
+<div class="agent-opt selected" data-agent="claude">
+<div class="agent-opt-name">Claude</div>
+<div class="agent-opt-desc">Claude Code CLI</div>
+</div>
+<div class="agent-opt" data-agent="pi">
+<div class="agent-opt-name">Pi</div>
+<div class="agent-opt-desc">Pi Agent CLI<br>支持多种模型（DeepSeek 等）</div>
+</div>
+<div class="agent-opt" data-agent="hermes">
+<div class="agent-opt-name">Hermes</div>
+<div class="agent-opt-desc">Hermes Agent CLI<br>DeepSeek · 工具调用</div>
+</div>
+<div class="agent-opt" data-agent="openclaw">
+<div class="agent-opt-name">OpenClaw</div>
+<div class="agent-opt-desc">OpenClaw Agent CLI<br>多模型 · 本地执行</div>
+</div>
+        </div>
+      </div>
+      <div class="setting-status" id="settingStatus"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Agent meta ────────────────────────────────────────────────────
+const AGENT_META = {
+  dispatcher: { label:'Dispatcher', dot:'#22d3ee', avCls:'av-planner' },
+  merger:     { label:'Merger',     dot:'#c4b5fd', avCls:'av-merger' },
+  worker:     { label:'Worker',     dot:'#60a5fa', avCls:'av-worker' },
+};
+function agentMeta(name) {
+  const base = name.split('(')[0];
+  return AGENT_META[base] || { label: name, dot:'#888', avCls:'av-planner' };
+}
+
+// ── State ─────────────────────────────────────────────────────────
+let es = null;
+let currentSessionId = null;
+const runningSessions = new Set();
+let streamBubbles = {};
+let workerCardEls = {};
+let memberCardEls = {};
+let workerSteps = {};
+
+// sessionCache 仅用于判断是否需要清缓存（删除时用）
+const sessionCache = new Map();
+
+// ── SSE ───────────────────────────────────────────────────────────
+
+function connectSSE(sessionId) {
+  if (es) { es.close(); es = null; }
+  if (!sessionId) return;
+  es = new EventSource(`/stream/${sessionId}`);
+  es.onmessage = e => {
+    try { handle(JSON.parse(e.data)); } catch {}
+  };
+  es.onerror = () => {};
+
+}
+
+// 提交任务
+async function postTask(content, sessionId) {
+  const res = await fetch('/task', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content, sessionId }),
+  });
+  return res.json();
+}
+
+// 暂停任务
+async function postPause(sessionId) {
+  await fetch('/pause', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId }),
+  });
+}
+
+// 中止任务
+async function postAbort(sessionId) {
+  hidePausedUI();
+  await fetch('/abort', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId }),
+  });
+}
+
+// 续跑任务（支持补充指令）
+async function postResume(sessionId) {
+  if (!sessionId) return;
+  const btn = document.getElementById('resumeBtn');
+  btn.disabled = true;
+  btn.textContent = '启动中...';
+  const supplement = document.getElementById('supplementTa')?.value || '';
+  try {
+    const r = await fetch('/resume', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId, supplement: supplement.trim() }),
+    });
+    const data = await r.json();
+    if (data.ok) {
+      hidePausedUI();
+      setRunning(true, sessionId);
+      hideResumeBtn();
+    } else {
+      btn.disabled = false;
+      btn.textContent = '▶ 继续';
+      sysMsg('续跑失败: ' + (data.error || ''), true);
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = '▶ 继续';
+    sysMsg('续跑失败: ' + e.message, true);
+  }
+}
+
+function showResumeBtn() {
+  const btn = document.getElementById('resumeBtn');
+  btn.style.display = 'flex';
+  btn.disabled = false;
+  btn.textContent = '▶ 继续';
+}
+function hideResumeBtn() {
+  document.getElementById('resumeBtn').style.display = 'none';
+}
+
+// 暂停后显示补充输入区 + 终止按钮
+function showPausedUI() {
+  const bar = document.getElementById('supplementBar');
+  if (bar) { bar.style.display = 'flex'; }
+  const ta = document.getElementById('supplementTa');
+  if (ta) { ta.value = ''; ta.style.height = 'auto'; }
+  // 暂停时只显示终止按钮（红色），不显示暂停按钮
+  document.getElementById('pauseBtn').style.display = 'none';
+  document.getElementById('stopBtn').style.display = 'flex';
+}
+function hidePausedUI() {
+  const bar = document.getElementById('supplementBar');
+  if (bar) bar.style.display = 'none';
+  const ta = document.getElementById('supplementTa');
+  if (ta) ta.value = '';
+}
+
+// ── Message Handler ───────────────────────────────────────────────
+function handle(msg) {
+  switch (msg.type) {
+
+    case 'session_start':
+      // 只做轻量更新，不清空聊天区
+      // 聊天区内容始终由 loadSession fetch 服务端数据决定
+      setTitle(msg.title);
+      addOrUpdateSidebarItem(msg.sessionId, msg.title);
+      break;
+
+    case 'dispatcher_start':
+      // 新一轮开始，重置右侧面板内容（区块常驻，不隐藏）
+      document.getElementById('col-pending').innerHTML = '';
+      document.getElementById('col-claimed').innerHTML = '';
+      document.getElementById('col-done').innerHTML = '';
+      document.getElementById('cnt-pending').textContent = '0';
+      document.getElementById('cnt-claimed').textContent = '0';
+      document.getElementById('cnt-done').textContent = '0';
+      document.getElementById('topoModeBadge').textContent = '';
+      document.getElementById('topoSvg').innerHTML = '';
+      window._currentMode = null;
+      window._progressStream = null;
+      window._agentState = { dispatcherStatus: 'running', workers: {} };
+      upsertWorker('dispatcher', 'dispatcher', 'running', '分析任务类型和协作模式...');
+      appendStatusLine('Team 正在分析任务...');
+      break;
+
+    case 'dispatch_ready':
+      upsertWorker('dispatcher', 'dispatcher', 'done', `→ ${msg.mode}`);
+      chat.querySelector('.status-line')?.remove();
+      if (window._agentState) window._agentState.dispatcherStatus = 'done';
+      if (msg.mode === 'NOOP') break;
+      window._currentMode = msg.mode;
+      showDispatchCard(msg.mode, msg.reason, msg.tasks, msg.roundId);
+      // requestAnimationFrame 确保 DOM 布局完成后再渲染，避免 clientWidth 为 0
+      requestAnimationFrame(() => updateTopo(msg.tasks || []));
+      if (msg.tasks?.length) {
+        if (msg.tasks.some(t => t.blockedBy?.length)) {
+          document.getElementById('topoSection').classList.add('open');
+        }
+        updateQueueBoard(msg.tasks);
+      }
+      break;
+
+    case 'team_ready':
+      // Team Members 常驻，team_ready 只更新卡片状态
+      for (const m of msg.members) upsertMember(m.workerId, m.role, 'idle', '待命');
+      updateQueueBoard(msg.tasks);
+      break;
+
+    case 'task_added': {
+      const newTasks = [...(window._lastTasks || []), msg.task];
+      window._lastTasks = newTasks;
+      updateQueueBoard(newTasks);
+      updateTopo(newTasks);
+      // 重建 dispatch 卡片（含新任务）
+      const oldCard = chat.querySelector('[data-type="dispatch-card"]');
+      if (oldCard) {
+        const mode = window._currentMode || 'SWARM';
+        const reason = oldCard.querySelector('.plan-card-reason')?.textContent || '';
+        const existingRoundId = oldCard.dataset.dispatchRound || currentSessionId;
+        const insertBefore = oldCard.nextSibling || null;
+        oldCard.remove();
+        showDispatchCard(mode, reason, newTasks, existingRoundId);
+        const newCard = chat.querySelector('[data-type="dispatch-card"]');
+        if (newCard && insertBefore && chat.contains(insertBefore)) {
+          chat.insertBefore(newCard, insertBefore);
+        }
+      }
+      // 涌现任务额外显示通知
+      if (msg.task?.type === 'emerged' || msg.task?.type === 'challenge') {
+        const t = msg.task;
+        const eIcon = t.icon || '✦';
+        const eColor = t.type === 'challenge' ? 'var(--amber)' : 'var(--teal)';
+        const eRow = el('div', 'msg-row agent');
+        eRow.dataset.type = 'emerge-notice';
+        eRow.innerHTML = `
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 10px;background:var(--bg-card);border:1px solid ${eColor};border-left:3px solid ${eColor};border-radius:var(--radius);max-width:600px;">
+            <span style="color:${eColor};font-size:13px;flex-shrink:0">${eIcon}</span>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:${eColor};letter-spacing:.3px;margin-bottom:3px">${esc(t.addedBy||'').replace('worker-','W')} ${esc(t.label||'涌现')}任务 #${t.id}</div>
+              <div style="font-size:10px;color:var(--text-3)">${esc((t.description||'').slice(0,80))}</div>
+            </div>
+          </div>`;
+        const dispatchCard = chat.querySelector('[data-type="dispatch-card"]');
+        if (dispatchCard?.nextSibling) {
+          chat.insertBefore(eRow, dispatchCard.nextSibling);
+        } else {
+          chat.appendChild(eRow);
+        }
+      }
+      scrollBottom();
+      break;
+    }
+
+    case 'task_emerged': {
+      const w = msg.workerId.replace('worker-', 'W');
+      const eIcon = msg.icon || '✦';
+      const eLabel = `${esc(w)} ${esc(msg.label || '涌现')}任务 #${msg.taskId}`;
+      const eColor = msg.type === 'challenge' ? 'var(--amber)' : 'var(--teal)';
+      const row = el('div', 'msg-row agent');
+      row.dataset.type = 'emerge-notice';
+      row.innerHTML = `
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 10px;background:var(--bg-card);border:1px solid ${eColor};border-left:3px solid ${eColor};border-radius:var(--radius);max-width:600px;">
+          <span style="color:${eColor};font-size:13px;flex-shrink:0">${eIcon}</span>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:${eColor};letter-spacing:.3px;margin-bottom:3px">${eLabel}</div>
+            <div style="font-size:11px;color:var(--text-2);margin-bottom:4px">${esc(msg.reason || '')}</div>
+            <div style="font-size:10px;color:var(--text-3)">${esc(msg.description || '')}</div>
+          </div>
+        </div>`;
+      chat.appendChild(row);
+      // 用服务端下发的完整任务列表重绘 dispatch 卡片
+      if (msg.allTasks?.length) {
+        const oldCard = chat.querySelector(`[data-dispatch-round="${msg.roundId}"]`)
+          || chat.querySelector('[data-type="dispatch-card"]');
+        const mode = window._currentMode || 'SWARM';
+        const reason = oldCard?.querySelector('.plan-card-reason')?.textContent || '';
+        // 记录 oldCard 的下一个兄弟节点作为插入锚点
+        const insertBefore = oldCard?.nextSibling || null;
+        const parentNode = oldCard?.parentNode || chat;
+        oldCard?.remove();
+        showDispatchCard(mode, reason, msg.allTasks, msg.roundId);
+        // 把新渲染的卡片移到原来位置
+        const newCard = chat.querySelector(`[data-dispatch-round="${msg.roundId}"]`);
+        if (newCard && insertBefore && parentNode.contains(insertBefore)) {
+          parentNode.insertBefore(newCard, insertBefore);
+        }
+        window._lastTasks = msg.allTasks;
+        updateQueueBoard(msg.allTasks);
+        updateTopo(msg.allTasks);
+      }
+      scrollBottom();
+      break;
+    }
+
+    case 'worker_start':
+      upsertMember(msg.workerId, msg.role, 'running', '正在认领任务...');
+      addProgressItem('start', msg.workerId, `启动`);
+      break;
+
+    case 'task_claimed':
+      claimAnimation(msg.workerId, msg.role || msg.agent || 'worker', msg.description);
+      addProgressItem('claim', msg.workerId, `认领：${(msg.description||'').slice(0,40)}`);
+      break;
+
+    case 'task_done':
+      memberTaskDone(msg.workerId);
+      addProgressItem('done', msg.workerId, `完成任务`);
+      break;
+
+    case 'worker_done':
+      upsertMember(msg.workerId, msg.role, 'done', '全部完成');
+      addProgressItem('done', msg.workerId, `退出`);
+      break;
+
+    case 'queue_update':
+      window._lastTasks = msg.tasks;
+      if (msg.tasks?.some(t => t.blockedBy?.length)) {
+        document.getElementById('topoSection').classList.add('open');
+      }
+      updateQueueBoard(msg.tasks);
+      updateTopo(msg.tasks);
+      break;
+
+    case 'merge_start':
+      break; // 整合由普通 worker 执行，无需单独处理
+
+    case 'worker_step':
+      addWorkerStep(msg.workerId, msg.step, msg.text, msg.tool);
+      break;
+
+    case 'agent_text':
+      // 不往聊天区写流式内容，只更新看板成员状态
+      updateMemberActivity(msg.agent, msg.text.slice(0, 60));
+      break;
+
+    case 'agent_tool_use': {
+      updateMemberActivity(msg.agent, `${msg.tool}...`);
+      // 只展示有意义的工具（搜索/写文件），过滤内部 API 调用
+      const toolText = summarizeToolForProgress(msg.tool, msg.input);
+      if (toolText) addProgressItem('tool', msg.agent, toolText);
+      break;
+    }
+
+    case 'agent_tool_result':
+      // 忽略
+      break;
+
+    case 'agent_done':
+      closeStream(msg.agent);
+      break;
+
+    case 'session_done': {
+      const doneSid = msg.sessionId || currentSessionId;
+      if (!window._agentState) window._agentState = {};
+      window._agentState.dispatcherStatus = 'done';
+      setRunning(false, doneSid);
+      // 从服务端重新 fetch 完整 session 数据，保证展示最新结果
+      fetch(`/sessions/${doneSid}`).then(r => r.json()).then(s => {
+        if (doneSid !== currentSessionId) return; // 用户已切走，不更新
+        chat.querySelector('.status-line')?.remove();
+        if (window._progressStream) { window._progressStream.remove(); window._progressStream = null; }
+        const result = s.messages?.find(m => m.role === 'result' && m.roundId === s.currentRoundId)
+                    || s.messages?.filter(m => m.role === 'result').pop();
+        // 按 roundId 去重，防止同一轮结果重复渲染
+        const roundId = result?.roundId || s.currentRoundId;
+        if (result && !chat.querySelector(`[data-result-round="${roundId}"]`)) {
+          showResult(result.content, roundId);
+        }
+      }).catch(() => {
+        // fetch 失败时降级用 SSE 里的 result
+        if (msg.result) showResult(msg.result, msg.roundId);
+      });
+      loadSessions();
+      break;
+    }
+
+    case 'paused':
+      setRunning(false, currentSessionId);
+      sysMsg('已暂停，可补充指令后继续');
+      upsertWorker('dispatcher', 'dispatcher', 'done', '→ 已暂停');
+      if (window._agentState) window._agentState.dispatcherStatus = 'paused';
+      showPausedUI();
+      showResumeBtn();
+      break;
+
+    case 'aborted':
+      setRunning(false, currentSessionId);
+      sysMsg('已中止');
+      upsertWorker('dispatcher', 'dispatcher', 'done', '→ 已中止');
+      if (window._agentState) window._agentState.dispatcherStatus = 'aborted';
+      hideResumeBtn();
+      hidePausedUI();
+      break;
+
+    case 'error':
+      setRunning(false, currentSessionId); sysMsg(msg.message, true);
+      break;
+  }
+}
+
+// ── Chat ──────────────────────────────────────────────────────────
+const chat = document.getElementById('chat');
+
+function hideHint() { document.getElementById('emptyHint')?.remove(); }
+
+function userBubble(text) {
+  const row = el('div','msg-row user');
+  const c = el('div','msg-content'); c.textContent = text;
+  row.appendChild(c); chat.appendChild(row); scrollBottom();
+}
+
+function openStream(agent) {
+  if (streamBubbles[agent]) return;
+  const meta = agentMeta(agent);
+  const row = el('div','msg-row agent');
+  const author = el('div','msg-author running'); author.dataset.agent = agent;
+  const dot = el('span','author-dot'); dot.style.background = meta.dot;
+  author.appendChild(dot); author.append(' ' + meta.label);
+  const content = el('div','msg-content streaming'); content.dataset.agent = agent;
+  row.appendChild(author); row.appendChild(content);
+  chat.appendChild(row); streamBubbles[agent] = { row, content, text: '' };
+  scrollBottom();
+}
+
+function closeStream(agent) {
+  if (!streamBubbles[agent]) return;
+  streamBubbles[agent].content.classList.remove('streaming');
+  chat.querySelectorAll(`.msg-author.running[data-agent="${agent}"]`).forEach(e => e.classList.remove('running'));
+  delete streamBubbles[agent];
+}
+
+function appendText(agent, text) {
+  if (!streamBubbles[agent]) openStream(agent);
+  const s = streamBubbles[agent];
+  s.text += text;
+  s.content.textContent = s.text;
+  scrollBottom();
+}
+
+function appendToolUse(agent, tool, input) {
+  const details = document.createElement('details');
+  details.className = 'tool-use';
+  const summary = document.createElement('summary');
+  summary.innerHTML = `<span class="tool-name">${esc(tool)}</span>`;
+  const pre = document.createElement('pre');
+  pre.textContent = typeof input === 'object' ? JSON.stringify(input, null, 2) : String(input ?? '');
+  details.appendChild(summary); details.appendChild(pre);
+  const lastRow = [...chat.querySelectorAll('.msg-row.agent')].pop();
+  if (lastRow) lastRow.appendChild(details);
+  else { const r = el('div','msg-row agent'); r.appendChild(details); chat.appendChild(r); }
+  scrollBottom();
+}
+
+function appendToolResult(agent, content) {
+  const last = [...chat.querySelectorAll('.tool-use')].pop();
+  if (last && !last.querySelector('.tool-result')) {
+    const pre = document.createElement('pre'); pre.className = 'tool-result';
+    pre.style.color = 'var(--text-3)'; pre.style.borderTop = '1px solid var(--border)';
+    pre.textContent = content; last.appendChild(pre);
+  }
+}
+
+function renderSessionMessages(s) {
+  const messages = s.messages || [];
+  let hasContent = false;
+  let lastTasks = null;
+  let lastMode = null;
+
+  const userMessages = messages.filter(m => m.role === 'user').sort((a, b) => (a.ts || 0) - (b.ts || 0));
+
+  for (const userMsg of userMessages) {
+    const roundId = userMsg.roundId;
+    const roundMsgs = messages
+      .filter(m => m.role !== 'user' && m.roundId === roundId)
+      .sort((a, b) => (a.ts || 0) - (b.ts || 0));
+
+    const result = roundMsgs.find(m => m.role === 'result');
+    const dispatchEntry = roundMsgs.findLast ? roundMsgs.findLast(m => m.role === 'dispatch')
+      : [...roundMsgs].reverse().find(m => m.role === 'dispatch');
+    const legacyDispatch = s.dispatch?.roundId === roundId ? s.dispatch : null;
+    const dispSrc = dispatchEntry || legacyDispatch || (result?.mode ? result : null);
+
+    userBubble(userMsg.content);
+    hasContent = true;
+
+    const isLastRound = roundId === s.currentRoundId;
+    const dispatchTasks = dispSrc?.tasks;
+    const dispatchMode  = dispSrc?.mode || result?.mode;
+    const dispatchReason = dispSrc?.reason || '';
+    const boardTasksForRound = result?.tasks
+      || (isLastRound && s.taskSnapshot?.length ? s.taskSnapshot : null)
+      || dispSrc?.tasks;
+
+    if (dispSrc && dispatchMode && dispatchMode !== 'NOOP' && dispatchTasks !== null && dispatchTasks !== undefined) {
+      // 用 taskSnapshot（含涌现任务）替换 dispatch 原始 tasks，确保展示完整
+      const displayTasks = isLastRound && s.taskSnapshot?.length ? s.taskSnapshot : (dispatchTasks || []);
+      showDispatchCard(dispatchMode, dispatchReason, displayTasks, roundId);
+      if (isLastRound) {
+        lastTasks = boardTasksForRound || dispatchTasks || [];
+        lastMode  = dispatchMode;
+      }
+    }
+
+    // 按 ts 顺序渲染 emerge / result（dispatch 已在上面处理）
+    for (const m of roundMsgs) {
+      if (m.role === 'emerge') {
+        const w = m.workerId?.replace('worker-', 'W') || '';
+        const eIcon = m.icon || '✦';
+        const eLabel = `${esc(w)} ${esc(m.label || '涌现')}任务 #${m.taskId}`;
+        const eColor = m.type === 'challenge' ? 'var(--amber)' : 'var(--teal)';
+        const eRow = el('div', 'msg-row agent');
+        eRow.dataset.type = 'emerge-notice';
+        eRow.innerHTML = `
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 10px;background:var(--bg-card);border:1px solid ${eColor};border-left:3px solid ${eColor};border-radius:var(--radius);max-width:600px;">
+            <span style="color:${eColor};font-size:13px;flex-shrink:0">${eIcon}</span>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:${eColor};letter-spacing:.3px;margin-bottom:3px">${eLabel}</div>
+              <div style="font-size:11px;color:var(--text-2);margin-bottom:4px">${esc(m.reason || '')}</div>
+              <div style="font-size:10px;color:var(--text-3)">${esc(m.description || '')}</div>
+            </div>
+          </div>`;
+        chat.appendChild(eRow);
+        hasContent = true;
+      } else if (m.role === 'result') {
+        showResult(m.content, m.roundId);
+      }
+    }
+  }
+
+  // 恢复 workerSteps 进度流（仅未完成时渲染）
+  if (s.workerSteps?.length) {
+    s.workerSteps.forEach(step => {
+      const wid = normalizeWorkerId(step.workerId);
+      if (!workerSteps[wid]) workerSteps[wid] = [];
+      workerSteps[wid].push(step);
+    });
+    const hasResult = messages.some(m => m.role === 'result');
+    if (!hasResult) {
+      window._progressStream = null;
+      s.workerSteps.forEach(step => addProgressItem(step.step, step.workerId, step.text));
+    }
+  }
+
+  if (lastTasks?.length) {
+    window._currentMode = lastMode;
+    if (lastTasks.some(t => t.blockedBy?.length)) document.getElementById('topoSection').classList.add('open');
+    updateTopo(lastTasks);
+    updateQueueBoard(lastTasks);
+  }
+
+  if (hasContent) {
+    setTimeout(() => chat.scrollTop = chat.scrollHeight, 50);
+  } else {
+    const latestDispatch = (s.messages?.findLast ? s.messages.findLast(m => m.role === 'dispatch') : null) || s.dispatch;
+    if (latestDispatch?.mode) {
+      window._currentMode = latestDispatch.mode;
+      const boardTasks = s.taskSnapshot?.length ? s.taskSnapshot : (latestDispatch?.tasks || []);
+      showDispatchCard(latestDispatch.mode, latestDispatch.reason || '', boardTasks, latestDispatch.roundId);
+      if (boardTasks.some(t => t.blockedBy?.length)) document.getElementById('topoSection').classList.add('open');
+      updateQueueBoard(boardTasks);
+      updateTopo(boardTasks);
+    }
+    const hint = el('div', 'sys-msg');
+    hint.style.cssText = 'color:var(--amber);padding:8px 20px;font-size:12px;';
+    hint.innerHTML = `⏳ Workers 执行中，完成后自动更新结果...`;
+    chat.appendChild(hint);
+    setTimeout(() => chat.scrollTop = chat.scrollHeight, 50);
+  }
+}
+
+function showDispatchCard(mode, reason, tasks, roundId) {
+  // 用 roundId 做 DOM 去重，避免多次调用重复插入
+  const dedupeKey = roundId || (currentSessionId + '-' + mode);
+  if (chat.querySelector(`[data-dispatch-round="${dedupeKey}"]`)) return;
+
+  const row = el('div','msg-row agent');
+  row.dataset.type = 'dispatch-card';
+  row.dataset.dispatchRound = dedupeKey;
+  const author = el('div','msg-author');
+  author.innerHTML = `<span class="author-dot" style="background:var(--accent)"></span> Dispatcher`;
+  const card = el('div','plan-card');
+  const color = MODE_COLOR[mode] || 'var(--accent)';
+  const modeColors = { SOLO:'var(--teal)', PARALLEL:'var(--accent)', SWARM:'var(--purple)', PIPELINE:'var(--amber)', HYBRID:'var(--green)', NOOP:'var(--text-3)' };
+  const modeBg = { SOLO:'rgba(45,212,191,.12)', PARALLEL:'var(--accent-dim)', SWARM:'var(--purple-dim)', PIPELINE:'var(--amber-dim)', HYBRID:'var(--green-dim)', NOOP:'var(--bg-hover)' };
+  const mc = modeColors[mode] || color;
+  const mb = modeBg[mode] || 'var(--accent-dim)';
+  card.innerHTML = `
+    <div class="plan-card-mode" style="color:${mc};background:${mb}">⬡ ${mode}</div>
+    ${reason ? `<div class="plan-card-reason">${esc(reason)}</div>` : ''}
+    <div class="plan-task-list">${(tasks||[]).map((t) => {
+      const deps = t.blockedBy?.length ? ` <span style="color:var(--amber);font-size:10px;margin-left:4px">← [${t.blockedBy.join(',')}]</span>` : '';
+      return `<div class="plan-task"><span class="plan-task-num">${t.id}</span><span class="plan-task-desc">${esc(t.description.slice(0,80))}${t.description.length>80?'…':''}${deps}</span></div>`;
+    }).join('')}</div>`;
+  row.appendChild(author); row.appendChild(card);
+
+  // 插到 progress-stream 之前，保证 dispatch 卡片在进度流上方
+  const progressStream = chat.querySelector('.progress-stream');
+  if (progressStream) {
+    chat.insertBefore(row, progressStream);
+  } else {
+    chat.appendChild(row);
+  }
+  scrollBottom();
+}
+
+
+function showResult(md, roundId) {
+  // 同一 roundId 不重复渲染
+  if (roundId && chat.querySelector(`[data-result-round="${roundId}"]`)) return;
+  const row = el('div','msg-row agent');
+  if (roundId) row.dataset.resultRound = roundId;
+  const author = el('div','msg-author');
+  author.innerHTML = `<span class="author-dot" style="background:var(--green)"></span> Team`;
+  const block = el('div','result-block');
+  block.innerHTML = `<div class="md">${renderMd(md)}</div>`;
+  row.appendChild(author); row.appendChild(block);
+  chat.appendChild(row); scrollBottom();
+}
+
+function getOrCreateProgressStream() {
+  if (window._progressStream && document.contains(window._progressStream)) {
+    return window._progressStream;
+  }
+  const container = el('div', 'progress-stream');
+  chat.appendChild(container);
+  window._progressStream = container;
+  return container;
+}
+
+function addProgressItem(type, agentName, text) {
+  const container = getOrCreateProgressStream();
+  const ICONS = { start:'◎', claim:'→', tool:'⚙', done:'✓' };
+  const normalized = normalizeWorkerId(agentName);
+  const workerNum = normalized.replace('worker-','W').replace('merger','Merger').replace('dispatcher','Disp');
+  const item = el('div', `progress-item p-${type}`);
+  item.innerHTML = `<span class="p-icon">${ICONS[type]||'·'}</span><span class="p-worker">${esc(workerNum)}</span><span class="p-text">${esc(text)}</span>`;
+  container.appendChild(item);
+  // 超过20条时移除最旧的，保持聊天区整洁
+  if (container.children.length > 20) container.removeChild(container.firstChild);
+  scrollBottom();
+}
+
+function summarizeToolForProgress(tool, input) {
+  if (!input) return null;
+  switch (tool) {
+    case 'WebSearch': return `搜索: ${input.query || ''}`.slice(0, 50);
+    case 'WebFetch':  return `读取: ${(input.url||'').replace(/https?:\/\//,'').slice(0,40)}`;
+    case 'Write':     return `写入: ${(input.file_path||'').split('/').pop()}`;
+    case 'Bash': {
+      const cmd = (input.command||'');
+      if (cmd.includes('localhost:3000/api')) return null; // 过滤内部 API
+      if (cmd.startsWith('node -e')) return null;
+      if (cmd.startsWith('cat ') || cmd.startsWith('ls ')) return null;
+      return `执行: ${cmd.slice(0,40)}`;
+    }
+    default: return null;
+  }
+}
+
+function appendStatusLine(text) {
+  let existing = chat.querySelector('.status-line');
+  if (existing) { existing.textContent = text; scrollBottom(); return; }
+  const e = el('div', 'sys-msg status-line'); e.textContent = text;
+  chat.appendChild(e); scrollBottom();
+}
+
+function sysMsg(text, isErr=false) {
+  const e = el('div',`sys-msg${isErr?' err':''}`); e.textContent = text;
+  chat.appendChild(e); scrollBottom();
+}
+
+function scrollBottom() { chat.scrollTop = chat.scrollHeight; }
+function setTitle(t) { document.getElementById('topbarTitle').textContent = t || '新任务'; }
+
+// ── Queue Board ───────────────────────────────────────────────────
+function resetBoard() {
+  streamBubbles = {}; workerCardEls = {}; workerSteps = {};
+  window._currentMode = null; window._agentState = null; window._lastTasks = null; window._progressStream = null;
+  // 右侧区块常驻，只清空内容
+  document.getElementById('col-pending').innerHTML = '';
+  document.getElementById('col-claimed').innerHTML = '';
+  document.getElementById('col-done').innerHTML = '';
+  document.getElementById('cnt-pending').textContent = '0';
+  document.getElementById('cnt-claimed').textContent = '0';
+  document.getElementById('cnt-done').textContent = '0';
+  document.getElementById('topoSvg').innerHTML = '';
+  document.getElementById('topoModeBadge').textContent = '';
+  document.getElementById('topoSection').classList.remove('open');
+  // Dispatcher 常驻，只重置状态回 idle
+  document.getElementById('workerCards').innerHTML = '';
+  upsertWorker('dispatcher', 'dispatcher', 'idle', '待命');
+  // Team Members 卡片常驻，只重置状态回 idle
+  Object.keys(memberCardEls).forEach(wid => upsertMember(wid, null, 'idle', '待命'));
+}
+
+function updateQueueBoard(tasks) {
+  const byStatus = { pending: [], claimed: [], done: [] };
+  tasks.forEach(t => { (byStatus[t.status] || byStatus.pending).push(t); });
+  ['pending','claimed','done'].forEach(s => {
+    const col = document.getElementById(`col-${s}`);
+    document.getElementById(`cnt-${s}`).textContent = byStatus[s].length;
+    col.innerHTML = byStatus[s].map(t => `
+      <div class="task-card ${t.status}" ${t.icon ? `style="border-color:var(${t.type==='challenge'?'--amber':'--teal'})"` : ''}>
+        <div class="task-card-head">
+          <span class="task-id">#${t.id}</span>
+          ${t.icon ? `<span style="font-size:9px;color:var(${t.type==='challenge'?'--amber':'--teal'});font-weight:700">${esc(t.icon)}${esc(t.label)}</span>` : ''}
+          ${t.blockedBy?.length ? `<span class="task-agent-badge">← [${t.blockedBy.join(',')}]</span>` : ''}
+          <span class="task-status-dot dot-${t.status}" style="margin-left:auto"></span>
+        </div>
+        <div class="task-desc">${esc(t.description)}</div>
+        ${t.claimedBy ? `<div class="task-worker">→ ${esc(t.claimedBy)}</div>` : ''}
+      </div>`).join('');
+  });
+}
+
+// ── Team Member Cards ─────────────────────────────────────────────
+
+function upsertMember(workerId, role, status, taskText) {
+  // role 为 null 时（如 resetBoard 重置状态），若卡片已存在则只更新状态，跳过 DOM 创建
+  if (role == null && memberCardEls[workerId]) {
+    const card = memberCardEls[workerId];
+    const badgeCls = { idle:'mb-idle', running:'mb-running', claiming:'mb-claiming', done:'mb-done' }[status] || 'mb-idle';
+    const badgeTxt = { idle:'待命', running:'运行中', claiming:'认领中', done:'完成' }[status] || status;
+    card.className = `member-card ${status}`;
+    const badge = document.getElementById(`mb-${workerId}`);
+    if (badge) { badge.className = `member-badge ${badgeCls}`; badge.textContent = badgeTxt; }
+    if (taskText) {
+      const t = document.getElementById(`mt-text-${workerId}`);
+      if (t) t.textContent = taskText;
+    }
+    return;
+  }
+  const meta = agentMeta(role);
+  const initial = (role || 'W')[0].toUpperCase();
+  const badgeCls = { idle:'mb-idle', running:'mb-running', claiming:'mb-claiming', done:'mb-done' }[status] || 'mb-idle';
+  const badgeTxt = { idle:'待命', running:'运行中', claiming:'认领中', done:'完成' }[status] || status;
+
+  if (!memberCardEls[workerId]) {
+    const card = el('div', `member-card ${status}`);
+    card.id = `mc-${workerId}`;
+    card.innerHTML = `
+      <div class="member-head">
+        <div class="member-avatar ${meta.avCls}">${initial}</div>
+        <div class="member-info">
+          <div class="member-name">${meta.label !== workerId ? meta.label : workerId.replace('worker-', 'Worker ')}</div>
+        </div>
+        <span class="member-badge ${badgeCls}" id="mb-${workerId}">${badgeTxt}</span>
+      </div>
+      <div class="member-task" id="mt-${workerId}">
+        <span class="task-label">→</span><span id="mt-text-${workerId}">${esc(taskText||'')}</span>
+      </div>
+      <div class="member-timeline" id="tl-${workerId}"></div>`;
+    card.addEventListener('click', () => toggleTimeline(workerId));
+    document.getElementById('memberCards').appendChild(card);
+    memberCardEls[workerId] = card;
+  } else {
+    const card = memberCardEls[workerId];
+    card.className = `member-card ${status}`;
+    const badge = document.getElementById(`mb-${workerId}`);
+    if (badge) { badge.className = `member-badge ${badgeCls}`; badge.textContent = badgeTxt; }
+    if (taskText) {
+      const t = document.getElementById(`mt-text-${workerId}`);
+      if (t) t.textContent = taskText;
+    }
+  }
+}
+
+function claimAnimation(workerId, agent, description) {
+  // 短暂 claiming 状态 → 然后变 running
+  upsertMember(workerId, agent, 'claiming', `认领：${description.slice(0, 50)}`);
+  setTimeout(() => {
+    if (memberCardEls[workerId]) {
+      upsertMember(workerId, agent, 'running', description.slice(0, 60));
+    }
+  }, 600);
+}
+
+function memberTaskDone(workerId) {
+  // 找到这个 worker 的当前角色
+  const card = memberCardEls[workerId];
+  if (!card) return;
+  const role = card.querySelector('.member-name')?.textContent?.toLowerCase() || 'researcher';
+  upsertMember(workerId, role, 'running', '寻找下一个任务...');
+}
+
+function updateMemberActivity(agentName, text) {
+  // agentName 形如 "coder(worker-1)"
+  const match = agentName.match(/\(([^)]+)\)/);
+  if (!match) return;
+  const wid = match[1];
+  const el2 = document.getElementById(`mt-text-${wid}`);
+  if (el2 && text) el2.textContent = text.slice(0, 60);
+}
+
+// ── System Worker Cards (planner/merger) ─────────────────────────
+
+function upsertWorker(workerId, role, status, info) {
+  const meta = agentMeta(role);
+  const initial = role[0].toUpperCase();
+  const badgeCls = status==='running'?'wb-running':status==='done'?'wb-done':'wb-waiting';
+  const badgeTxt = {running:'运行中',done:'完成',waiting:'等待',idle:'待命'}[status]||status;
+
+  if (!workerCardEls[workerId]) {
+    const card = el('div',`worker-card ${status}`);
+    card.id = `wc-${workerId}`;
+    card.innerHTML = `
+      <div class="member-avatar ${meta.avCls}" style="width:22px;height:22px;font-size:10px">${initial}</div>
+      <div class="worker-info">
+        <div class="worker-name">${meta.label}</div>
+        <div class="worker-status" id="ws-${workerId}">${esc(info||'')}</div>
+      </div>
+      <span class="worker-badge ${badgeCls}" id="wb-${workerId}">${badgeTxt}</span>`;
+    document.getElementById('workerCards').appendChild(card);
+    workerCardEls[workerId] = card;
+  } else {
+    workerCardEls[workerId].className = `worker-card ${status}`;
+    const badge = document.getElementById(`wb-${workerId}`);
+    if (badge) { badge.className=`worker-badge ${badgeCls}`; badge.textContent=badgeTxt; }
+    const st = document.getElementById(`ws-${workerId}`);
+    if (st && info) st.textContent = info;
+  }
+}
+
+// ── Task Topology ─────────────────────────────────────────────────
+
+document.getElementById('topoToggle').addEventListener('click', () => {
+  document.getElementById('topoSection').classList.toggle('open');
+});
+
+function renderTopoInSvg(svg, tasks, agentState) {
+  if (!svg) return;
+  tasks = tasks || [];
+
+  // tasks 为空时（SWARM 初始态）只渲染 Dispatcher 节点
+  if (!tasks.length) {
+    const W = svg.parentElement?.clientWidth || 460;
+    const NODE_H = 28, PAD = 12, SYS_NODE_W = 70;
+    const dispStatus = agentState?.dispatcherStatus || 'pending';
+    const sysColor = s => ({ running:'var(--accent)', done:'var(--green)', pending:'var(--text-3)' }[s] || 'var(--text-3)');
+    const sysBg    = s => ({ running:'var(--accent-dim)', done:'var(--green-dim)', pending:'var(--bg-hover)' }[s] || 'var(--bg-hover)');
+    const sysIcon  = s => ({ running:'◉', done:'●', pending:'○' }[s] || '○');
+    const dispX = (W - SYS_NODE_W) / 2;
+    svg.setAttribute('width', W);
+    svg.setAttribute('height', NODE_H + PAD * 2);
+    svg.setAttribute('viewBox', `0 0 ${W} ${NODE_H + PAD * 2}`);
+    svg.innerHTML = `
+      <g>
+        <rect x="${dispX}" y="${PAD}" width="${SYS_NODE_W}" height="${NODE_H}" rx="4"
+          fill="${sysBg(dispStatus)}" stroke="${sysColor(dispStatus)}" stroke-width="1.5"/>
+        <text x="${dispX + SYS_NODE_W/2}" y="${PAD + 11}" text-anchor="middle"
+          font-size="8" font-weight="700" fill="${sysColor(dispStatus)}" font-family="var(--font)">${sysIcon(dispStatus)} Dispatcher</text>
+        <text x="${dispX + SYS_NODE_W/2}" y="${PAD + 21}" text-anchor="middle"
+          font-size="7" fill="var(--text-2)" font-family="var(--font)">${window._currentMode || ''}</text>
+      </g>`;
+    return;
+  }
+  const W = svg.parentElement?.clientWidth || 460;
+
+  // 分层布局：按依赖关系计算每个节点的层级
+  const layers = computeLayers(tasks);
+  const maxTaskLayer = Math.max(...Object.values(layers));
+  const layerMap = {};
+  for (const [id, layer] of Object.entries(layers)) {
+    if (!layerMap[layer]) layerMap[layer] = [];
+    layerMap[layer].push(id);
+  }
+
+  const NODE_H = 28, GAP_Y = 32, PAD = 12;
+  const SYS_NODE_W = 70;
+  const maxNodesInLayer = Math.max(...Object.values(layerMap).map(ids => ids.length));
+  const NODE_W = 64; // 固定节点宽度，不压缩
+  const GAP_X = 8;
+  // 实际需要的宽度，不够时允许 SVG 比面板宽（横向滚动）
+  const ACTUAL_W = Math.max(W, PAD * 2 + maxNodesInLayer * NODE_W + (maxNodesInLayer - 1) * GAP_X);
+
+  // 任务节点偏移一层（为 Dispatcher 留出第0层）
+  const TASK_LAYER_OFFSET = 1;
+  const positions = {};
+  for (const [layer, ids] of Object.entries(layerMap)) {
+    const l = parseInt(layer) + TASK_LAYER_OFFSET;
+    const totalW = ids.length * NODE_W + (ids.length - 1) * GAP_X;
+    const startX = Math.max(PAD, (ACTUAL_W - totalW) / 2);
+    ids.forEach((id, i) => {
+      positions[id] = { x: startX + i * (NODE_W + GAP_X), y: PAD + l * (NODE_H + GAP_Y) };
+    });
+  }
+
+  // Dispatcher 在顶部居中
+  const dispX = (ACTUAL_W - SYS_NODE_W) / 2;
+  const dispY = PAD;
+
+  const SVG_H = PAD + (maxTaskLayer + TASK_LAYER_OFFSET + 1) * (NODE_H + GAP_Y) - GAP_Y + PAD;
+  svg.setAttribute('width', ACTUAL_W);
+  svg.setAttribute('height', SVG_H);
+  svg.setAttribute('viewBox', `0 0 ${ACTUAL_W} ${SVG_H}`);
+
+  const STATUS_COLOR = { pending:'var(--text-3)', claimed:'var(--accent)', done:'var(--green)' };
+  const STATUS_BG    = { pending:'var(--bg-hover)', claimed:'var(--accent-dim)', done:'var(--green-dim)' };
+
+  // 颜色辅助
+  const dispStatus  = agentState?.dispatcherStatus || 'pending';
+  const sysColor = s => ({ running:'var(--accent)', done:'var(--green)', pending:'var(--text-3)' }[s] || 'var(--text-3)');
+  const sysBg    = s => ({ running:'var(--accent-dim)', done:'var(--green-dim)', pending:'var(--bg-hover)' }[s] || 'var(--bg-hover)');
+  const sysIcon  = s => ({ running:'◉', done:'●', pending:'○' }[s] || '○');
+
+  let html = '<defs><marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="var(--border-2)"/></marker></defs>';
+
+  // ── 画边 ──────────────────────────────────────────────────────────
+
+  // Dispatcher → 每个任务（取第0层任务，即没有 blockedBy 的）
+  const rootTasks = tasks.filter(t => !t.blockedBy?.length);
+  for (const t of rootTasks) {
+    const to = positions[t.id];
+    if (!to) continue;
+    const x1 = dispX + SYS_NODE_W / 2, y1 = dispY + NODE_H;
+    const x2 = to.x + NODE_W / 2,      y2 = to.y;
+    const edgeColor = dispStatus === 'done' ? 'var(--green)' : 'var(--border-2)';
+    html += `<path d="M${x1},${y1} C${x1},${(y1+y2)/2} ${x2},${(y1+y2)/2} ${x2},${y2}" fill="none" stroke="${edgeColor}" stroke-width="1.5" marker-end="url(#arr)"/>`;
+  }
+
+  // 任务间依赖箭头
+  for (const task of tasks) {
+    if (!task.blockedBy?.length) continue;
+    for (const depId of task.blockedBy) {
+      const from = positions[depId], to = positions[task.id];
+      if (!from || !to) continue;
+      const x1 = from.x + NODE_W / 2, y1 = from.y + NODE_H;
+      const x2 = to.x   + NODE_W / 2, y2 = to.y;
+      const dep = tasks.find(t => t.id === depId);
+      const edgeColor = dep?.status === 'done' ? 'var(--green)' : 'var(--border-2)';
+      html += `<path d="M${x1},${y1} C${x1},${(y1+y2)/2} ${x2},${(y1+y2)/2} ${x2},${y2}" fill="none" stroke="${edgeColor}" stroke-width="1.5" marker-end="url(#arr)"/>`;
+    }
+  }
+
+  // 叶子任务之间无 Merger 节点，跳过此段连线
+  const depIds = new Set(tasks.flatMap(t => t.blockedBy || []));
+  const leafTasks = tasks.filter(t => !depIds.has(t.id));
+  for (const t of []) { // merger 节点已移除
+    const from = positions[t.id];
+    if (!from) continue;
+    const x1 = from.x + NODE_W / 2, y1 = from.y + NODE_H;
+    const x2 = mergX + SYS_NODE_W / 2, y2 = mergY;
+    const edgeColor = t.status === 'done' ? 'var(--green)' : 'var(--border-2)';
+    html += `<path d="M${x1},${y1} C${x1},${(y1+y2)/2} ${x2},${(y1+y2)/2} ${x2},${y2}" fill="none" stroke="${edgeColor}" stroke-width="1.5" marker-end="url(#arr)"/>`;
+  }
+
+  // ── 画节点 ────────────────────────────────────────────────────────
+
+  // Dispatcher
+  html += `
+    <g>
+      <rect x="${dispX}" y="${dispY}" width="${SYS_NODE_W}" height="${NODE_H}" rx="4"
+        fill="${sysBg(dispStatus)}" stroke="${sysColor(dispStatus)}" stroke-width="1.5"/>
+      <text x="${dispX + SYS_NODE_W/2}" y="${dispY + 11}" text-anchor="middle"
+        font-size="8" font-weight="700" fill="${sysColor(dispStatus)}" font-family="var(--font)">${sysIcon(dispStatus)} Dispatcher</text>
+      <text x="${dispX + SYS_NODE_W/2}" y="${dispY + 21}" text-anchor="middle"
+        font-size="7" fill="var(--text-2)" font-family="var(--font)">${window._currentMode || ''}</text>
+    </g>`;
+
+  // 任务节点
+  for (const task of tasks) {
+    const pos = positions[task.id];
+    if (!pos) continue;
+    const { x, y } = pos;
+    const color = STATUS_COLOR[task.status] || 'var(--text-3)';
+    const bg    = STATUS_BG[task.status]    || 'var(--bg-hover)';
+    const shortId = task.id.length > 6 ? task.id.slice(-4) : task.id;
+    const maxChars = Math.max(4, Math.floor(NODE_W * 0.14));
+    const label = task.description.slice(0, maxChars) + (task.description.length > maxChars ? '…' : '');
+    const claimedBy = task.claimedBy ? task.claimedBy.replace('worker-','W') : '';
+    const statusIcon = { pending:'○', claimed:'◉', done:'●' }[task.status] || '○';
+    const hasTag = !!task.icon;
+    const tagColor = task.type === 'challenge' ? 'var(--amber)' : 'var(--teal)';
+    const strokeDash = hasTag ? 'stroke-dasharray="3,2"' : '';
+    const emergedMark = task.icon ? ` ${task.icon}` : '';
+    const nodeStroke = hasTag ? tagColor : color;
+    const nodeStrokeWidth = hasTag ? '2' : '1.5';
+    html += `
+      <g title="${esc(task.description)}${task.label ? ` [${task.label}]` : ''}">
+        <rect x="${x}" y="${y}" width="${NODE_W}" height="${NODE_H}" rx="4"
+          fill="${bg}" stroke="${nodeStroke}" stroke-width="${nodeStrokeWidth}" ${strokeDash}/>
+        <text x="${x + NODE_W/2}" y="${y + 11}" text-anchor="middle"
+          font-size="8" font-weight="700" fill="${color}" font-family="var(--font)">${statusIcon} #${shortId}${claimedBy ? ' '+claimedBy : ''}${emergedMark}</text>
+        <text x="${x + NODE_W/2}" y="${y + 21}" text-anchor="middle"
+          font-size="7" fill="var(--text-2)" font-family="var(--font)">${esc(label)}</text>
+      </g>`;
+  }
+
+
+  svg.innerHTML = html;
+}
+
+const MODE_COLOR = { SOLO:'var(--accent)', PARALLEL:'var(--green)', PIPELINE:'var(--amber)', HYBRID:'var(--purple)', SWARM:'var(--teal)' };
+
+function updateTopo(tasks, agentState) {
+  const svg = document.getElementById('topoSvg');
+  // tasks 为空时也渲染（SWARM 初始态只画 Dispatcher 节点）
+  renderTopoInSvg(svg, tasks || [], agentState || window._agentState);
+  const badge = document.getElementById('topoModeBadge');
+  if (badge && window._currentMode) {
+    badge.textContent = '· ' + window._currentMode;
+  }
+}
+
+function computeLayers(tasks) {
+  const layers = {};
+  const taskMap = Object.fromEntries(tasks.map(t => [t.id, t]));
+
+  function getLayer(id, visited = new Set()) {
+    if (layers[id] !== undefined) return layers[id];
+    if (visited.has(id)) return 0; // 防循环
+    visited.add(id);
+    const task = taskMap[id];
+    if (!task?.blockedBy?.length) { layers[id] = 0; return 0; }
+    const maxDep = Math.max(...task.blockedBy.map(depId => getLayer(depId, visited)));
+    layers[id] = maxDep + 1;
+    return layers[id];
+  }
+
+  for (const task of tasks) getLayer(task.id);
+  return layers;
+}
+
+function normalizeWorkerId(id) {
+  if (!id) return id;
+  // "coder(worker-1)" → "worker-1"，"worker-1" → "worker-1"
+  const m = id.match(/\(([^)]+)\)/);
+  return m ? m[1] : id;
+}
+
+function addWorkerStep(rawId, step, text, tool) {
+  const workerId = normalizeWorkerId(rawId);
+  if (!workerSteps[workerId]) workerSteps[workerId] = [];
+  workerSteps[workerId].push({ step, text, tool, ts: Date.now() });
+
+  // 更新时间线 DOM（如果已展开）
+  const tl = document.getElementById(`tl-${workerId}`);
+  if (!tl) return;
+  const item = buildTimelineItem(step, text, tool);
+  tl.appendChild(item);
+  // 如果是认领步骤，更新成员卡片状态文字
+  if (step === 'claim') updateMemberActivity(workerId, text);
+}
+
+function buildTimelineItem(step, text, tool) {
+  const ICONS = { claim:'→', tool:'⚙', done:'✓', add_task:'＋' };
+  const item = el('div', `timeline-item tl-${step}`);
+  item.innerHTML = `
+    <span class="timeline-dot"></span>
+    <span class="timeline-text">${esc((ICONS[step]||'·') + ' ' + (text||''))}</span>`;
+  return item;
+}
+
+function toggleTimeline(workerId) {
+  const card = memberCardEls[workerId];
+  if (!card) return;
+  const wasExpanded = card.classList.contains('expanded');
+  // 折叠所有其他卡片
+  Object.values(memberCardEls).forEach(c => c.classList.remove('expanded'));
+  if (!wasExpanded) {
+    card.classList.add('expanded');
+    // 渲染该 worker 的所有步骤
+    const tl = document.getElementById(`tl-${workerId}`);
+    if (tl) {
+      tl.innerHTML = '';
+      (workerSteps[workerId] || []).forEach(s => tl.appendChild(buildTimelineItem(s.step, s.text, s.tool)));
+    }
+  }
+}
+
+function badgeLabel(s) { return {idle:'待命',running:'运行中',done:'完成',waiting:'等待'}[s]||s; }
+
+// ── Send ──────────────────────────────────────────────────────────
+const inputTa = document.getElementById('inputTa');
+
+function sendTask() {
+  const text = inputTa.value.trim();
+  if (!text) return;
+  inputTa.value = ''; resize();
+
+  // 立即渲染用户消息，不等服务端响应
+  loadSessionToken++; // 使正在进行的 loadSession 失效
+  hideHint();
+  if (currentSessionId) {
+    chat.querySelectorAll('.status-line, .progress-stream').forEach(e => e.remove());
+  } else {
+    chat.innerHTML = '';
+  }
+  // 右侧面板（任务池/拓扑/Worker）保留上一轮状态，等 dispatcher_start 事件到来后再清空
+  // 只重置聊天区相关的临时状态
+  streamBubbles = {}; workerSteps = {};
+  window._progressStream = null;
+  setTitle(text.slice(0, 50));
+  userBubble(text);
+  appendStatusLine('正在分析任务...');
+
+  // 已有会话：先连 SSE 再发任务，避免 dispatcher_start 事件在 connectSSE 之前就发出
+  if (currentSessionId) connectSSE(currentSessionId);
+
+  postTask(text, currentSessionId).then(async r => {
+    if (r.sessionId) {
+      const sid = r.sessionId;
+      const isNew = sid !== currentSessionId;
+      currentSessionId = sid;
+      localStorage.setItem('last-session', sid);
+      history.replaceState(null, '', `?session=${sid}`);
+      // 新会话：此时服务端刚返回响应，emit 还未开始，connectSSE 来得及
+      if (isNew) {
+        connectSSE(sid);
+        addOrUpdateSidebarItem(sid, r.title || text.slice(0, 40));
+      }
+      setRunning(true, sid);
+    }
+  }).catch(e => {
+    chat.querySelector('.status-line')?.remove();
+    sysMsg('提交失败: ' + e.message, true);
+  });
+}
+
+document.getElementById('sendBtn').addEventListener('click', sendTask);
+document.getElementById('pauseBtn').addEventListener('click', () => postPause(currentSessionId));
+document.getElementById('stopBtn').addEventListener('click', () => postAbort(currentSessionId));
+document.getElementById('resumeBtn').addEventListener('click', () => postResume(currentSessionId));
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('shareBtn');
+  if (!currentSessionId || btn.disabled) return;
+  btn.disabled = true;
+  btn.textContent = '…';
+  try {
+    const r = await fetch('/share/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: currentSessionId }),
+    });
+    const { url } = await r.json();
+    const fullUrl = location.origin + url;
+    await navigator.clipboard.writeText(fullUrl);
+    btn.textContent = '✓ 已复制';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '↗ 分享';
+      btn.classList.remove('copied');
+      btn.disabled = false;
+    }, 3000);
+  } catch {
+    btn.textContent = '↗ 分享';
+    btn.disabled = false;
+  }
+});
+inputTa.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); sendTask(); }
+  else requestAnimationFrame(resize); // Shift+Enter 换行后立即撑高
+});
+inputTa.addEventListener('input', resize);
+
+function resize() { inputTa.style.height='auto'; inputTa.style.height=Math.min(inputTa.scrollHeight,140)+'px'; }
+function setRunning(v, sessionId) {
+  const sid = sessionId || currentSessionId;
+  if (v) runningSessions.add(sid);
+  else   runningSessions.delete(sid);
+  updateRunningUI();
+}
+
+function updateRunningUI() {
+  // 当前展示的 session 是否在跑
+  const isRunning = runningSessions.has(currentSessionId);
+  document.getElementById('sendBtn').disabled = false; // 始终可发
+  document.getElementById('sendBtn').style.display = '';
+  document.getElementById('pauseBtn').style.display = isRunning ? 'flex' : 'none';
+  document.getElementById('stopBtn').style.display = isRunning ? 'flex' : 'none';
+  // 会话完成后显示分享按钮
+  const isDone = !isRunning && currentSessionId && window._agentState?.dispatcherStatus === 'done';
+  document.getElementById('shareBtn').style.display = isDone ? '' : 'none';
+  // 跑起来后隐藏继续按钮
+  if (isRunning) hideResumeBtn();
+  // 侧边栏给运行中的 session 加指示点
+  runningSessions.forEach(sid => {
+    const item = document.querySelector(`.session-item[data-id="${sid}"] .s-title`);
+    if (item && !item.querySelector('.running-dot')) {
+      const dot = document.createElement('span');
+      dot.className = 'running-dot';
+      dot.style.cssText = 'display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-left:5px;animation:blink .8s infinite;vertical-align:middle;';
+      item.appendChild(dot);
+    }
+  });
+  // 移除已完成的点
+  document.querySelectorAll('.session-item').forEach(item => {
+    const sid = item.dataset.id;
+    if (!runningSessions.has(sid)) {
+      item.querySelector('.running-dot')?.remove();
+    }
+  });
+}
+
+// ── Sidebar / Panel ───────────────────────────────────────────────
+document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+
+// 折叠后点 logo 区域也能展开
+document.getElementById('sidebar').addEventListener('click', e => {
+  if (document.getElementById('sidebar').classList.contains('collapsed') && !e.target.closest('#sidebarToggle')) {
+    toggleSidebar();
+  }
+});
+
+function toggleSidebar() {
+  const s=document.getElementById('sidebar'); s.classList.toggle('collapsed');
+  const collapsed = s.classList.contains('collapsed');
+  document.getElementById('sidebarToggle').textContent = collapsed ? '▶' : '◀';
+  localStorage.setItem('sidebar-collapsed', collapsed ? '1' : '0');
+}
+document.getElementById('newBtn').addEventListener('click', () => {
+  currentSessionId = null;
+  if (es) { es.close(); es = null; }
+  history.replaceState(null, '', location.pathname);
+  chat.innerHTML='';
+  const h=el('div','sys-msg'); h.id='emptyHint'; h.textContent='输入任务，Team 会自动选择协作模式并完成';
+  chat.appendChild(h); resetBoard(); setTitle('新任务');
+  document.querySelectorAll('.session-item').forEach(e=>e.classList.remove('active'));
+  inputTa.focus();
+});
+document.getElementById('panelBtn').addEventListener('click', () => document.getElementById('panel').classList.toggle('collapsed'));
+document.getElementById('panelClose').addEventListener('click', () => document.getElementById('panel').classList.add('collapsed'));
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const html=document.documentElement; const next=html.dataset.theme==='dark'?'light':'dark';
+  html.dataset.theme=next;
+  document.getElementById('themeBtn').textContent=next==='dark'?'🌙':'☀️';
+  localStorage.setItem('theme', next);
+});
+
+// ── Sessions ──────────────────────────────────────────────────────
+function addOrUpdateSidebarItem(id, title) {
+  const list = document.getElementById('sessionsList');
+  const s = { id, title, createdAt: new Date().toISOString() };
+  const item = renderSessionItem(s, list);
+  if (!list.contains(item)) list.prepend(item);
+  document.querySelectorAll('.session-item').forEach(e => e.classList.remove('active'));
+  item.classList.add('active');
+}
+
+function renderSessionItem(s, list) {
+  const existing = list.querySelector(`.session-item[data-id="${s.id}"]`);
+  if (existing) {
+    existing.querySelector('.s-title').textContent = s.title || '';
+    existing.querySelector('.s-meta').textContent = fmtTime(s.createdAt);
+    return existing;
+  }
+  const item = document.createElement('div');
+  item.className = 'session-item';
+  item.dataset.id = s.id;
+  item.innerHTML = `
+    <div class="session-item-info">
+      <div class="s-title">${esc(s.title||'')}</div>
+      <div class="s-meta">${fmtTime(s.createdAt)}</div>
+    </div>
+    <button class="del-btn" data-id="${s.id}" title="删除">✕</button>`;
+  item.addEventListener('click', e => {
+    if (e.target.closest('.del-btn')) return;
+    loadSession(s.id, item);
+  });
+  item.querySelector('.del-btn').addEventListener('click', async e => {
+    e.stopPropagation();
+    await fetch(`/sessions/${s.id}`, { method: 'DELETE' });
+    sessionCache.delete(s.id);
+    if (currentSessionId === s.id) {
+      currentSessionId = null;
+      if (es) { es.close(); es = null; }
+      localStorage.removeItem('last-session');
+      history.replaceState(null, '', location.pathname);
+      chat.innerHTML = '';
+      const h = el('div','sys-msg'); h.id='emptyHint';
+      h.textContent = '输入任务，Team 会自动选择协作模式并完成';
+      chat.appendChild(h); resetBoard(); setTitle('新任务');
+    }
+    item.remove();
+  });
+  return item;
+}
+
+async function loadSessions(autoLoadLast = false) {
+  try {
+    const sessions = await fetch('/sessions').then(r=>r.json());
+    const list = document.getElementById('sessionsList');
+
+    // 移除已删除的 session item
+    list.querySelectorAll('.session-item').forEach(el2 => {
+      if (!sessions.find(s => s.id === el2.dataset.id)) el2.remove();
+    });
+
+    // 插入或更新 session items（最新的在最前）
+    sessions.forEach((s, i) => {
+      const item = renderSessionItem(s, list);
+      if (!list.contains(item)) {
+        if (i === 0) list.prepend(item);
+        else {
+          const prev = list.querySelector(`.session-item[data-id="${sessions[i-1].id}"]`);
+          prev ? prev.after(item) : list.appendChild(item);
+        }
+      }
+    });
+
+    // 高亮当前 session
+    list.querySelectorAll('.session-item').forEach(el2 => {
+      el2.classList.toggle('active', el2.dataset.id === currentSessionId);
+    });
+
+    // 刷新后自动恢复上次打开的 session
+    if (autoLoadLast && sessions.length) {
+      const lastId = localStorage.getItem('last-session');
+      const target = sessions.find(s => s.id === lastId) || sessions[0];
+      const el2 = list.querySelector(`.session-item[data-id="${target.id}"]`);
+      loadSession(target.id, el2);
+    }
+  } catch {}
+}
+
+let pollTimer = null;
+let loadSessionToken = 0; // 每次 loadSession 递增，sendTask 时让旧的 loadSession 作废
+
+async function loadSession(id, elItem) {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  const myToken = ++loadSessionToken;
+
+  history.replaceState(null, '', `?session=${id}`);
+  localStorage.setItem('last-session', id);
+  document.querySelectorAll('.session-item').forEach(e => e.classList.remove('active'));
+  elItem?.classList.add('active');
+
+  try {
+    console.log('fetching session:', id);
+    const s = await fetch(`/sessions/${id}`).then(r=>r.json());
+    // 如果 sendTask 已经发出（token 已变），放弃渲染
+    if (myToken !== loadSessionToken) return;
+    console.log('session loaded:', s.title, 'messages:', s.messages?.length);
+    currentSessionId = id;
+    chat.innerHTML = '';
+    resetBoard();
+    setTitle(s.title||'');
+
+    // 恢复 agentState（Dispatcher/Merger/Worker 卡片状态）
+    // 从 messages 统一抽象读当前 round 的 dispatch，兼容旧数据回退到 session.dispatch
+    const msgs = s.messages || [];
+    // 只取当前轮次的 dispatch，不跨轮 fallback（避免 NOOP 轮次显示上一轮的模式/拓扑）
+    const currentDispatch = (msgs.findLast ? msgs.findLast(m => m.role === 'dispatch' && m.roundId === s.currentRoundId) : null)
+      || (s.dispatch?.roundId === s.currentRoundId ? s.dispatch : null);
+    if (s.agentState && s.agentState.roundId === s.currentRoundId) {
+      window._agentState = s.agentState;
+      window._currentMode = currentDispatch?.mode || null;
+      const { dispatcherStatus, workers } = s.agentState;
+      const isNoop = currentDispatch?.mode === 'NOOP';
+      if (dispatcherStatus) {
+        const dispLabel = dispatcherStatus === 'done'
+          ? `→ ${currentDispatch?.mode || ''}`
+          : dispatcherStatus === 'aborted' ? '→ 已中止'
+          : dispatcherStatus === 'paused'  ? '→ 已暂停'
+          : '分析任务类型和协作模式...';
+        const dispWStatus = (dispatcherStatus === 'aborted' || dispatcherStatus === 'paused') ? 'done' : dispatcherStatus;
+        upsertWorker('dispatcher', 'dispatcher', dispWStatus, dispLabel);
+        // 历史恢复：暂停态重建补充输入区
+        if (dispatcherStatus === 'paused') {
+          showPausedUI();
+          showResumeBtn();
+        }
+      }
+      const workerEntries = workers && Object.keys(workers).length
+        ? Object.entries(workers)
+        : [];
+      if (!isNoop && workerEntries.length) {
+        // 历史恢复：更新 Team Members 卡片状态
+        workerEntries.forEach(([wid, w]) => upsertMember(wid, 'worker', w.status, w.task));
+        // 恢复拓扑和看板内容
+        const boardTasks = s.taskSnapshot?.length ? s.taskSnapshot : (currentDispatch?.tasks || []);
+        if (boardTasks.length) {
+          document.getElementById('topoSection').classList.add('open');
+          requestAnimationFrame(() => updateTopo(boardTasks));
+          updateQueueBoard(boardTasks);
+        }
+      }
+    }
+    // agentState 已恢复后再更新 UI（分享按钮依赖 _agentState.dispatcherStatus）
+    // 兜底：旧 session 无 agentState 时，有 result 消息也视为已完成
+    if (!window._agentState && msgs.some(m => m.role === 'result')) {
+      window._agentState = { dispatcherStatus: 'done' };
+    }
+    if (s.isRunning) setRunning(true, id);
+    updateRunningUI();
+    renderSessionMessages(s);
+
+    // 渲染完成后再连 SSE，避免 task_emerged 等事件在 dispatch 卡片渲染前到达
+    connectSSE(id);
+
+
+    // 如果没有完整结果，判断是否是孤儿任务（没有 worker 在跑）
+    const hasAllResults = (s.messages||[]).filter(m=>m.role==='user')
+      .every(m => (s.messages||[]).some(r => r.role==='result' && r.roundId===m.roundId));
+    if (!hasAllResults && s.title) {
+      // 检查是否是孤儿任务（有未完成任务但不在 runningSessions 里）
+      const hasPendingTasks = s.taskSnapshot?.some(t => t.status === 'pending' || t.status === 'claimed');
+      const isPaused = s.agentState?.dispatcherStatus === 'paused';
+      const isOrphan = hasPendingTasks && !runningSessions.has(id) && !isPaused;
+      if (isOrphan) {
+        showResumeBtn();
+      }
+      pollTimer = setInterval(async () => {
+        const fresh = await fetch(`/sessions/${id}`).then(r=>r.json()).catch(()=>null);
+        if (!fresh) return;
+        const freshComplete = (fresh.messages||[]).filter(m=>m.role==='user')
+          .every(m => (fresh.messages||[]).some(r => r.role==='result' && r.roundId===m.roundId));
+        if (freshComplete && fresh.messages?.length) {
+          clearInterval(pollTimer); pollTimer = null;
+          hideResumeBtn();
+          currentSessionId = null; // 强制重新加载
+          loadSession(id, elItem);
+        }
+      }, 3000);
+    }
+  } catch(e) { console.error('loadSession error:', e); sysMsg('加载失败: ' + e.message, true); }
+}
+
+function fmtTime(iso) { const d=new Date(iso); return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`; }
+
+// ── Markdown ──────────────────────────────────────────────────────
+function renderMd(md) {
+  let h=esc(md);
+  h=h.replace(/```(\w*)\n([\s\S]*?)```/g,(_,l,c)=>`<pre><code>${c.trimEnd()}</code></pre>`);
+  h=h.replace(/`([^`\n]+)`/g,'<code>$1</code>');
+  h=h.replace(/^### (.+)$/gm,'<h3>$1</h3>');
+  h=h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+  h=h.replace(/^# (.+)$/gm,'<h1>$1</h1>');
+  h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  h=h.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  h=h.replace(/^---$/gm,'<hr>');
+  h=h.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>');
+  h=h.replace(/^[\-\*] (.+)$/gm,'<li>$1</li>');
+  h=h.replace(/(<li>[\s\S]+?<\/li>\n?)+/g,m=>`<ul>${m}</ul>`);
+  h=h.replace(/^\d+\. (.+)$/gm,'<li>$1</li>');
+  h=h.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
+  h=h.replace(/\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)+)/g,(_,hdr,rows)=>{
+    const ths=hdr.split('|').filter(Boolean).map(c=>`<th>${c.trim()}</th>`).join('');
+    const trs=rows.trim().split('\n').map(r=>`<tr>${r.split('|').filter(Boolean).map(c=>`<td>${c.trim()}</td>`).join('')}</tr>`).join('');
+    return `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+  });
+  h=h.replace(/\n\n+/g,'</p><p>'); h='<p>'+h+'</p>';
+  h=h.replace(/<p>(<h[1-3]>|<ul>|<pre>|<hr>|<table>|<blockquote>)/g,'$1');
+  h=h.replace(/(<\/h[1-3]>|<\/ul>|<\/pre>|<hr>|<\/table>|<\/blockquote>)<\/p>/g,'$1');
+  h=h.replace(/<p><\/p>/g,'');
+  return h;
+}
+
+// ── Utils ─────────────────────────────────────────────────────────
+function el(tag,cls){const e=document.createElement(tag);e.className=cls;return e;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── Init ─────────────────────────────────────────────────────────
+(function init() {
+  // 恢复主题
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    document.documentElement.dataset.theme = savedTheme;
+    document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+  }
+
+  // 恢复侧边栏状态
+  if (localStorage.getItem('sidebar-collapsed') === '1') {
+    document.getElementById('sidebar').classList.add('collapsed');
+    document.getElementById('sidebarToggle').textContent = '▶';
+  }
+
+  // 初始化：渲染常驻的 Dispatcher 卡片
+  upsertWorker('dispatcher', 'dispatcher', 'idle', '待命');
+
+  // 初始化：从配置拉取 maxWorkers，渲染固定数量的 Team Members 卡片
+  fetch('/config/agent').then(r => r.json()).then(cfg => {
+    const count = cfg.maxWorkers || 4;
+    document.getElementById('memberCount').textContent = count;
+    for (let i = 1; i <= count; i++) {
+      upsertMember(`worker-${i}`, 'worker', 'idle', '待命');
+    }
+  }).catch(() => {});
+
+  // URL 参数优先：?session=xxx 直接加载指定 session
+  const urlSessionId = new URLSearchParams(location.search).get('session');
+  if (urlSessionId) {
+    connectSSE(urlSessionId); // 先连 SSE，不预设 currentSessionId
+    loadSessions(false).then(() => {
+      const el2 = document.querySelector(`.session-item[data-id="${urlSessionId}"]`);
+      loadSession(urlSessionId, el2);
+    });
+  } else {
+    loadSessions(true);
+  }
+  inputTa.focus();
+
+  // ── Settings Modal 绑定 ────────────────────────────────────────────
+  initSettingsModal();
+})();
+
+// ── Settings Modal ────────────────────────────────────────────────
+function openSettings() {
+  document.getElementById('settingsOverlay').classList.add('open');
+  // 并行拉取：当前配置 + 安装状态检测
+  Promise.all([
+    fetch('/config/agent').then(r => r.json()).catch(() => ({ agent: 'claude' })),
+    fetch('/config/agent/check').then(r => r.json()).catch(() => ({})),
+  ]).then(([cfg, checks]) => {
+    setSelectedAgent(cfg.agent || 'claude');
+    applyInstallChecks(checks);
+  });
+}
+function closeSettings() {
+  document.getElementById('settingsOverlay').classList.remove('open');
+}
+
+function setSelectedAgent(name) {
+  document.querySelectorAll('.agent-opt').forEach(opt => {
+    opt.classList.toggle('selected', opt.dataset.agent === name);
+  });
+  const badge = document.getElementById('currentAgentBadge');
+  if (badge) badge.textContent = name;
+}
+
+function applyInstallChecks(checks) {
+  document.querySelectorAll('.agent-opt').forEach(opt => {
+    const agent = opt.dataset.agent;
+    const info = checks[agent];
+    const nameEl = opt.querySelector('.agent-opt-name');
+    // 清除旧 tag
+    nameEl?.querySelectorAll('.agent-opt-not-installed-tag').forEach(t => t.remove());
+    if (info && !info.installed) {
+      opt.classList.add('not-installed');
+      const tag = document.createElement('span');
+      tag.className = 'agent-opt-not-installed-tag';
+      tag.textContent = '未安装';
+      nameEl?.appendChild(tag);
+    } else {
+      opt.classList.remove('not-installed');
+    }
+  });
+}
+
+function showSettingStatus(msg, isErr = false) {
+  const el2 = document.getElementById('settingStatus');
+  if (!el2) return;
+  el2.textContent = msg;
+  el2.className = 'setting-status show' + (isErr ? ' err' : '');
+  clearTimeout(el2._timer);
+  el2._timer = setTimeout(() => el2.classList.remove('show'), 2500);
+}
+
+function initSettingsModal() {
+  const settingsOverlay = document.getElementById('settingsOverlay');
+  document.getElementById('settingsBtn').addEventListener('click', openSettings);
+  document.getElementById('settingsClose').addEventListener('click', closeSettings);
+  settingsOverlay.addEventListener('click', e => { if (e.target === settingsOverlay) closeSettings(); });
+
+  document.getElementById('agentOptions').addEventListener('click', async e => {
+    const opt = e.target.closest('.agent-opt');
+    if (!opt) return;
+    const agent = opt.dataset.agent;
+    if (!agent) return;
+    // 未安装：阻止切换，显示提示
+    if (opt.classList.contains('not-installed')) {
+      showSettingStatus(`${agent} CLI 未安装，请先安装后再切换`, true);
+      return;
+    }
+    // 记录切换前的选中状态，失败时回滚
+    const prevAgent = document.querySelector('.agent-opt.selected')?.dataset.agent || 'claude';
+    setSelectedAgent(agent);
+    try {
+      const r = await fetch('/config/agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent }),
+      });
+      const data = await r.json();
+      if (data.ok) {
+        showSettingStatus(`✓ 已切换到 ${agent}`);
+      } else if (data.notInstalled) {
+        setSelectedAgent(prevAgent); // 回滚
+        showSettingStatus(`${agent} CLI 未安装（${data.bin}）`, true);
+      } else {
+        setSelectedAgent(prevAgent);
+        showSettingStatus('保存失败: ' + (data.error || ''), true);
+      }
+    } catch (err) {
+      setSelectedAgent(prevAgent);
+      showSettingStatus('保存失败: ' + err.message, true);
+    }
+  });
+}
+</script>
+</body>
+</html>

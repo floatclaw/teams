@@ -1,0 +1,10 @@
+{
+  "name": "teams",
+  "version": "1.0.0",
+  "description": "Local Agent Team Web UI powered by Claude Code",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  }
+}

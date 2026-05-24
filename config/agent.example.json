@@ -1,0 +1,29 @@
+{
+  "agent": "claude",
+  "_comment": "可选值: claude | pi | hermes | openclaw",
+  "port": 3001,
+  "taskTimeoutMs": 600000,
+  "maxWorkers": 4,
+  "swarmRoles": [
+    {
+      "role": "广度探索者",
+      "question": "还有哪些重要方向完全没被覆盖？",
+      "strength": "发现空白领域、边界话题、被忽视的维度"
+    },
+    {
+      "role": "深度挖掘者",
+      "question": "这个结论背后的机制是什么？为什么是这样？",
+      "strength": "原理剖析、规范细节、底层实现机制"
+    },
+    {
+      "role": "实践检验者",
+      "question": "这在真实工程中怎么用？有没有反例或坑？",
+      "strength": "工程案例、踩坑记录、生产环境最佳实践"
+    },
+    {
+      "role": "批判审视者",
+      "question": "这个结论可靠吗？有没有相反的证据或局限？",
+      "strength": "矛盾验证、局限性分析、质疑与反驳"
+    }
+  ]
+}

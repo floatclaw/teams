@@ -1,0 +1,14 @@
+node_modules/
+.myteams/
+*.log
+/tmp/
+.claude/
+tetris*.html
+tetris*.js
+tetris-*.html
+tetris-*.js
+tetris-complete.html
+waiting_expressions.py
+config/agent.json
+config/mcporter.json
+config/auth.json

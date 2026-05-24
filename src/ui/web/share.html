@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>teams · 分享</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f6ef7'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='system-ui,sans-serif' font-size='20' font-weight='800' fill='white'%3ET%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<script>const _t=localStorage.getItem('theme')||localStorage.getItem('share-theme');if(_t)document.documentElement.dataset.theme=_t;</script>
+<script src="/static/marked.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --radius: 0.5rem;
+  --font: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+[data-theme="dark"] {
+  --bg:#0d0e11; --bg-panel:#111318; --bg-card:#16181f; --bg-hover:#1c1f28;
+  --border:#1f2230; --border-2:#262840;
+  --text:#e2e4ef; --text-2:#8b8fa8; --text-3:#555870;
+  --accent:#4f6ef7; --accent-dim:#1e2d6b;
+  --green:#22c55e; --green-dim:#14532d;
+  --amber:#f59e0b; --amber-dim:#451a03;
+  --teal:#2dd4bf;
+  --purple:#a78bfa;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+}
+[data-theme="light"] {
+  --bg:#f9fafb; --bg-panel:#fff; --bg-card:#fff; --bg-hover:#f3f4f6;
+  --border:#e5e7eb; --border-2:#d1d5db;
+  --text:#111827; --text-2:#6b7280; --text-3:#9ca3af;
+  --accent:#4f6ef7; --accent-dim:#eff2ff;
+  --green:#16a34a; --green-dim:#dcfce7;
+  --amber:#d97706; --amber-dim:#fef3c7;
+  --teal:#0d9488;
+  --purple:#7c3aed;
+  --shadow:0 1px 3px rgba(0,0,0,.06);
+}
+html,body { background:var(--bg); color:var(--text); font-family:var(--font); font-size:13px; line-height:1.6; -webkit-font-smoothing:antialiased; min-height:100vh; }
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border-2); border-radius:10px; }
+::-webkit-scrollbar-thumb:hover { background:var(--text-3); }
+
+/* ── Header ── */
+.header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg-panel); border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: 48px;
+  display: flex; align-items: center; gap: 16px;
+}
+.header-logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
+.logo { width:24px; height:24px; border-radius:5px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#fff; flex-shrink:0; }
+.logo-text { font-size:13px; font-weight:700; letter-spacing:2px; font-family:'Space Grotesk',var(--font); background:linear-gradient(90deg,var(--accent) 0%,var(--teal) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; text-transform:uppercase; }
+.header-sep { width:1px; height:20px; background:var(--border); }
+.header-title-wrap { display:flex; flex-direction:column; gap:2px; overflow:hidden; }
+.header-title { font-size:13px; font-weight:600; color:var(--text); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; max-width:500px; }
+.header-goal { font-size:11px; color:var(--text-3); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; max-width:500px; }
+.header-meta { display:flex; align-items:center; gap:8px; margin-left:auto; flex-shrink:0; }
+.meta-badge { font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px; letter-spacing:.3px; }
+.meta-badge.mode-swarm  { background:rgba(45,212,191,.12); color:var(--teal); }
+.meta-badge.mode-solo   { background:var(--accent-dim); color:var(--accent); }
+.meta-badge.mode-parallel { background:rgba(34,197,94,.12); color:var(--green); }
+.meta-badge.mode-other  { background:var(--bg-hover); color:var(--text-2); }
+.meta-stat { font-size:11px; color:var(--text-3); }
+.theme-btn { background:none; border:1px solid var(--border); color:var(--text-2); border-radius:var(--radius); padding:3px 8px; cursor:pointer; font-size:11px; }
+.theme-btn:hover { background:var(--bg-hover); }
+
+/* ── Tabs ── */
+.tabs { display:flex; gap:0; border-bottom:1px solid var(--border); padding: 0 24px; background:var(--bg-panel); }
+.tab { padding:10px 16px; font-size:12px; font-weight:600; color:var(--text-3); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color .15s; letter-spacing:.3px; }
+.tab:hover { color:var(--text-2); }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+/* ── Content ── */
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ── Report Tab ── */
+.report-wrap { max-width:760px; margin:0 auto; padding:48px 32px 100px; }
+.report-empty { text-align:center; padding:80px 0; color:var(--text-3); font-size:14px; }
+
+/* Markdown 样式 */
+.md-body { font-size:14px; line-height:1.8; }
+.md-body h1 {
+  font-size:26px; font-weight:700; margin:0 0 8px; color:var(--text);
+  letter-spacing:-.3px; line-height:1.3;
+}
+.md-body h1 + p, .md-body h1 + blockquote { margin-top:0; }
+.md-body h2 {
+  font-size:18px; font-weight:700; margin:40px 0 12px; color:var(--text);
+  padding-bottom:8px; border-bottom:1px solid var(--border);
+  letter-spacing:-.2px;
+}
+.md-body h3 {
+  font-size:15px; font-weight:600; margin:28px 0 8px; color:var(--text);
+}
+.md-body h4 {
+  font-size:13px; font-weight:600; margin:20px 0 6px; color:var(--text-2);
+  text-transform:uppercase; letter-spacing:.4px; font-size:11px;
+}
+.md-body p { margin:0 0 14px; color:var(--text-2); }
+.md-body ul { margin:0 0 14px 0; padding-left:20px; color:var(--text-2); list-style:none; }
+.md-body ul li { position:relative; padding-left:14px; margin-bottom:6px; }
+.md-body ul li::before { content:'·'; position:absolute; left:0; color:var(--text-3); font-weight:700; }
+.md-body ol { margin:0 0 14px 20px; color:var(--text-2); }
+.md-body ol li { margin-bottom:6px; padding-left:4px; }
+.md-body li > ul, .md-body li > ol { margin-top:6px; margin-bottom:0; }
+.md-body code {
+  font-family:var(--font-mono); font-size:11.5px;
+  background:var(--bg-hover); padding:2px 6px; border-radius:4px;
+  color:var(--teal); border:1px solid var(--border);
+}
+.md-body pre {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px 18px; overflow-x:auto; margin:0 0 16px;
+}
+.md-body pre code { background:none; padding:0; color:var(--text-2); font-size:12px; border:none; }
+.md-body blockquote {
+  border-left:3px solid var(--accent); padding:10px 16px;
+  margin:0 0 16px; background:var(--accent-dim);
+  border-radius:0 var(--radius) var(--radius) 0;
+}
+.md-body blockquote p { color:var(--text-2); margin:0 0 6px; font-size:13px; }
+.md-body blockquote p:last-child { margin:0; }
+.md-body table { width:100%; border-collapse:collapse; margin:0 0 18px; font-size:12.5px; display:block; overflow-x:auto; }
+.md-body thead tr { background:var(--bg-hover); }
+.md-body th {
+  padding:9px 12px; text-align:left; font-weight:600; color:var(--text);
+  border:1px solid var(--border); white-space:nowrap; font-size:12px;
+}
+.md-body td { padding:8px 12px; border:1px solid var(--border); color:var(--text-2); vertical-align:top; }
+.md-body tbody tr:nth-child(even) { background:rgba(255,255,255,.02); }
+[data-theme="light"] .md-body tbody tr:nth-child(even) { background:rgba(0,0,0,.02); }
+.md-body hr { border:none; border-top:1px solid var(--border); margin:32px 0; }
+.md-body a { color:var(--accent); text-decoration:none; }
+.md-body a:hover { text-decoration:underline; }
+.md-body strong { color:var(--text); font-weight:600; }
+.md-body em { color:var(--text-2); font-style:italic; }
+/* 警示/提示段落：以 ⚠️ 开头 */
+.md-body p:has(> strong:first-child),
+.md-body li:has(> strong:first-child) { color:var(--text); }
+
+/* ── Process Tab ── */
+.process-wrap { display:grid; grid-template-columns:1fr 320px; height:calc(100vh - 97px); overflow:hidden; }
+.process-main { display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); }
+
+/* 拓扑面板 */
+.topo-panel { padding:20px 20px 16px; overflow:auto; border-bottom:1px solid var(--border); flex-shrink:0; }
+.panel-label { font-size:10px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--text-3); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.panel-label::before { content:''; display:inline-block; width:3px; height:10px; border-radius:2px; background:var(--accent); }
+#topoSvg { overflow:visible; display:block; }
+
+/* 任务列表面板 */
+.tasks-panel { flex:1; overflow-y:auto; padding:20px; }
+.task-item { border:1px solid var(--border); border-radius:var(--radius); margin-bottom:8px; overflow:hidden; transition:border-color .15s; }
+.task-item:hover { border-color:var(--border-2); }
+.task-item.has-result { cursor:pointer; }
+.task-item-head { display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:var(--bg-card); }
+.task-item.has-result .task-item-head { padding-right:36px; position:relative; }
+.task-item.has-result .task-item-head::after { content:'›'; position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--text-3); font-size:16px; transition:transform .2s; }
+.task-item.has-result.open .task-item-head::after { transform:translateY(-50%) rotate(90deg); }
+.task-left { display:flex; align-items:center; gap:6px; flex-shrink:0; padding-top:1px; }
+.task-num { font-size:10px; font-weight:700; color:var(--text-3); min-width:20px; }
+.task-status-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.dot-pending { background:var(--text-3); }
+.dot-claimed { background:var(--accent); }
+.dot-done    { background:var(--green); }
+.task-body-text { flex:1; min-width:0; }
+.task-desc-full { font-size:12px; color:var(--text); line-height:1.5; margin-bottom:4px; word-break:break-word; }
+.task-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.task-tag { font-size:9px; font-weight:700; padding:1px 6px; border-radius:3px; letter-spacing:.2px; }
+.tag-emerged   { background:rgba(45,212,191,.12); color:var(--teal); }
+.tag-challenge { background:rgba(245,158,11,.12); color:var(--amber); }
+.task-worker { font-size:10px; color:var(--text-3); }
+.task-blockedby { font-size:10px; color:var(--text-3); }
+.task-item-body { display:none; padding:16px 20px; background:var(--bg); border-top:1px solid var(--border); max-height:500px; overflow-y:auto; }
+.task-item.open .task-item-body { display:block; }
+
+/* 洞察面板 */
+.insights-panel { overflow-y:auto; padding:20px; }
+.insights-panel .panel-label::before { background:var(--teal); }
+.insight-block { margin-bottom:12px; padding:10px 12px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); border-left:3px solid var(--border-2); font-size:11px; line-height:1.6; color:var(--text-2); }
+.insight-block.has-conflict { border-left-color:var(--amber); }
+.insight-block .insight-main { color:var(--text); margin-bottom:4px; }
+.insight-block .insight-relation { color:var(--amber); margin-top:4px; font-size:10px; }
+.insight-block .insight-uncertain { color:var(--text-3); margin-top:3px; font-size:10px; }
+.insights-empty { color:var(--text-3); font-size:11px; text-align:center; padding:40px 0; }
+</style>
+</head>
+<body>
+<script>/*__SHARE_DATA__*/</script>
+
+<div class="header">
+  <a class="header-logo" href="/">
+    <div class="logo">T</div>
+    <span class="logo-text">Teams</span>
+  </a>
+  <div class="header-sep"></div>
+  <div class="header-title-wrap">
+    <div class="header-title" id="headerTitle">加载中…</div>
+    <div class="header-goal" id="headerGoal"></div>
+  </div>
+  <div class="header-meta">
+    <span class="meta-badge" id="modeBadge"></span>
+    <span class="meta-stat" id="metaStat"></span>
+    <button class="theme-btn" onclick="toggleTheme()">☀/☾</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('report')">任务结果</div>
+  <div class="tab" onclick="switchTab('process')">任务过程</div>
+</div>
+
+<!-- 报告 tab -->
+<div class="tab-content active" id="tab-report">
+  <div class="report-wrap">
+    <div id="reportBody"></div>
+  </div>
+</div>
+
+<!-- 过程 tab -->
+<div class="tab-content" id="tab-process">
+  <div class="process-wrap">
+    <div class="process-main">
+      <div class="topo-panel">
+        <div class="panel-label">任务拓扑</div>
+        <svg id="topoSvg"></svg>
+      </div>
+      <div class="tasks-panel">
+        <div class="panel-label">任务详情</div>
+        <div id="taskList"></div>
+      </div>
+    </div>
+    <div class="insights-panel">
+      <div class="panel-label" style="--accent:var(--teal)">群体洞察</div>
+      <div id="insightsBody"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const D = window.__SHARE_DATA__ || {};
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['report','process'][i] === name));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-'+name));
+  if (name === 'process') drawTopo();
+}
+
+function toggleTheme() {
+  const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t;
+  localStorage.setItem('theme', t);
+}
+
+// ── 初始化 ──────────────────────────────────────────────────────────────────
+function init() {
+  document.title = `${D.title || '任务结果'} · teams`;
+  document.getElementById('headerTitle').textContent = D.title || '任务结果';
+
+  // 从 goalMd 提取标题之外的正文作为描述
+  const goalDesc = D.goalMd
+    ? D.goalMd.split('\n').filter(l => l.trim() && !/^#/.test(l.trim())).join(' ').trim()
+    : '';
+  const goalEl = document.getElementById('headerGoal');
+  if (goalDesc) goalEl.textContent = goalDesc;
+  else goalEl.style.display = 'none';
+
+  const mode = (D.mode || 'SOLO').toUpperCase();
+  const modeEl = document.getElementById('modeBadge');
+  modeEl.textContent = mode;
+  modeEl.className = 'meta-badge mode-' + mode.toLowerCase();
+
+  const stat = [];
+  if (D.workerCount) stat.push(`${D.workerCount} workers`);
+  if (D.taskCount)   stat.push(`${D.taskCount} tasks`);
+  if (D.createdAt)   stat.push(new Date(D.createdAt).toLocaleDateString('zh-CN'));
+  document.getElementById('metaStat').textContent = stat.join(' · ');
+
+  renderReport();
+  renderInsights();
+  renderTaskList();
+}
+
+// ── 报告 ────────────────────────────────────────────────────────────────────
+function renderReport() {
+  const el = document.getElementById('reportBody');
+  if (!D.resultMd) {
+    el.innerHTML = '<div class="report-empty">暂无任务结果（任务可能仍在进行中）</div>';
+    return;
+  }
+  el.className = 'md-body';
+  el.innerHTML = marked.parse(D.resultMd);
+}
+
+// ── 洞察 ────────────────────────────────────────────────────────────────────
+function renderInsights() {
+  const el = document.getElementById('insightsBody');
+  if (!D.insightsMd) {
+    el.innerHTML = '<div class="insights-empty">暂无群体洞察</div>';
+    return;
+  }
+  // 按空行分割成独立洞察块，每块单独渲染
+  const blocks = D.insightsMd.split(/\n{2,}/).map(b => b.trim()).filter(Boolean);
+  el.innerHTML = blocks.map(block => {
+    // 跳过纯标题行（# xxx）
+    if (/^#{1,3}\s/.test(block) && !block.includes('\n')) return '';
+    const hasConflict = block.includes('↔') || block.includes('矛盾');
+    const lines = block.split('\n');
+    let html = '';
+    for (const line of lines) {
+      if (line.startsWith('↔')) {
+        html += `<div class="insight-relation">${esc(line)}</div>`;
+      } else if (line.startsWith('❓')) {
+        html += `<div class="insight-uncertain">${esc(line)}</div>`;
+      } else if (line.trim()) {
+        html += `<div class="insight-main">${esc(line)}</div>`;
+      }
+    }
+    return html ? `<div class="insight-block${hasConflict?' has-conflict':''}">${html}</div>` : '';
+  }).join('');
+  if (!el.innerHTML.trim()) el.innerHTML = '<div class="insights-empty">暂无群体洞察</div>';
+}
+
+// ── 任务列表 ────────────────────────────────────────────────────────────────
+function renderTaskList() {
+  const el = document.getElementById('taskList');
+  if (!D.tasks?.length) { el.innerHTML = '<div style="color:var(--text-3);font-size:11px;padding:20px 0;text-align:center">暂无任务数据</div>'; return; }
+  el.innerHTML = D.tasks.map(t => {
+    const result = D.taskResults?.[t.id];
+    const hasResult = !!result;
+    let tagHtml = '';
+    if (t.type === 'challenge') tagHtml = `<span class="task-tag tag-challenge">${t.icon||'⚔'} ${t.label||'挑战'}</span>`;
+    else if (t.icon) tagHtml = `<span class="task-tag tag-emerged">${t.icon} ${t.label||'涌现'}</span>`;
+    const workerHtml = t.claimedBy ? `<span class="task-worker">${esc(t.claimedBy.replace('worker-','W'))}</span>` : '';
+    const blockedHtml = t.blockedBy?.length ? `<span class="task-blockedby">← [${t.blockedBy.join(',')}]</span>` : '';
+    const bodyHtml = hasResult
+      ? `<div class="task-item-body"><div class="md-body">${marked.parse(result)}</div></div>`
+      : '';
+    return `
+      <div class="task-item${hasResult?' has-result':''}" id="ti-${t.id}" onclick="toggleTask('${t.id}')">
+        <div class="task-item-head">
+          <div class="task-left">
+            <span class="task-num">#${esc(t.id)}</span>
+            <span class="task-status-dot dot-${t.status}"></span>
+          </div>
+          <div class="task-body-text">
+            <div class="task-desc-full">${esc(t.description)}</div>
+            <div class="task-meta">${tagHtml}${workerHtml}${blockedHtml}</div>
+          </div>
+        </div>
+        ${bodyHtml}
+      </div>`;
+  }).join('');
+}
+
+function toggleTask(id) {
+  const el = document.getElementById('ti-' + id);
+  if (el?.classList.contains('has-result')) el.classList.toggle('open');
+}
+
+// ── 拓扑图 ──────────────────────────────────────────────────────────────────
+let topoDone = false;
+function drawTopo() {
+  if (topoDone) return;
+  topoDone = true;
+  const svg = document.getElementById('topoSvg');
+  const tasks = D.tasks || [];
+  if (!tasks.length) { svg.parentElement.innerHTML += '<div style="color:var(--text-3);font-size:11px">暂无任务数据</div>'; return; }
+
+  function computeLayers(tasks) {
+    const layers = {};
+    const calcLayer = (id, visited = new Set()) => {
+      if (layers[id] !== undefined) return layers[id];
+      if (visited.has(id)) return 0;
+      visited.add(id);
+      const t = tasks.find(x => x.id === id);
+      if (!t?.blockedBy?.length) { layers[id] = 0; return 0; }
+      layers[id] = 1 + Math.max(...t.blockedBy.map(dep => calcLayer(dep, new Set(visited))));
+      return layers[id];
+    };
+    tasks.forEach(t => calcLayer(t.id));
+    return layers;
+  }
+
+  const layers = computeLayers(tasks);
+  const maxLayer = Math.max(0, ...Object.values(layers));
+  const layerMap = {};
+  for (const [id, l] of Object.entries(layers)) {
+    if (!layerMap[l]) layerMap[l] = [];
+    layerMap[l].push(id);
+  }
+
+  const W = svg.parentElement?.clientWidth || 600;
+  const NODE_W = 90, NODE_H = 30, GAP_X = 10, GAP_Y = 34, PAD = 16;
+  const SYS_NODE_W = 80;
+  const maxInLayer = Math.max(...Object.values(layerMap).map(a => a.length));
+  const ACTUAL_W = Math.max(W, PAD*2 + maxInLayer*NODE_W + (maxInLayer-1)*GAP_X);
+  const TASK_LAYER_OFFSET = 1;
+
+  const positions = {};
+  for (const [layer, ids] of Object.entries(layerMap)) {
+    const l = parseInt(layer) + TASK_LAYER_OFFSET;
+    const totalW = ids.length * NODE_W + (ids.length-1) * GAP_X;
+    const startX = Math.max(PAD, (ACTUAL_W - totalW) / 2);
+    ids.forEach((id, i) => { positions[id] = { x: startX + i*(NODE_W+GAP_X), y: PAD + l*(NODE_H+GAP_Y) }; });
+  }
+
+  const dispX = (ACTUAL_W - SYS_NODE_W) / 2, dispY = PAD;
+  const SVG_H = PAD + (maxLayer + TASK_LAYER_OFFSET + 1)*(NODE_H+GAP_Y) - GAP_Y + PAD;
+  svg.setAttribute('width', ACTUAL_W);
+  svg.setAttribute('height', SVG_H);
+  svg.setAttribute('viewBox', `0 0 ${ACTUAL_W} ${SVG_H}`);
+
+  const STATUS_COLOR = { pending:'var(--text-3)', claimed:'var(--accent)', done:'var(--green)' };
+  const STATUS_BG    = { pending:'var(--bg-hover)', claimed:'var(--accent-dim)', done:'var(--green-dim)' };
+  const dispStatus = 'done';
+
+  let html = '<defs><marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="var(--border-2)"/></marker></defs>';
+
+  // 边
+  tasks.filter(t => !t.blockedBy?.length).forEach(t => {
+    const to = positions[t.id]; if (!to) return;
+    const x1=dispX+SYS_NODE_W/2, y1=dispY+NODE_H, x2=to.x+NODE_W/2, y2=to.y;
+    html += `<path d="M${x1},${y1} C${x1},${(y1+y2)/2} ${x2},${(y1+y2)/2} ${x2},${y2}" fill="none" stroke="var(--green)" stroke-width="1.5" marker-end="url(#arr)"/>`;
+  });
+  tasks.forEach(t => {
+    (t.blockedBy||[]).forEach(depId => {
+      const from=positions[depId], to=positions[t.id]; if (!from||!to) return;
+      const x1=from.x+NODE_W/2, y1=from.y+NODE_H, x2=to.x+NODE_W/2, y2=to.y;
+      const dep = tasks.find(x=>x.id===depId);
+      html += `<path d="M${x1},${y1} C${x1},${(y1+y2)/2} ${x2},${(y1+y2)/2} ${x2},${y2}" fill="none" stroke="${dep?.status==='done'?'var(--green)':'var(--border-2)'}" stroke-width="1.5" marker-end="url(#arr)"/>`;
+    });
+  });
+
+  // Dispatcher 节点
+  html += `<g><rect x="${dispX}" y="${dispY}" width="${SYS_NODE_W}" height="${NODE_H}" rx="4" fill="var(--green-dim)" stroke="var(--green)" stroke-width="1.5"/>
+    <text x="${dispX+SYS_NODE_W/2}" y="${dispY+11}" text-anchor="middle" font-size="8" font-weight="700" fill="var(--green)" font-family="var(--font)">● Dispatcher</text>
+    <text x="${dispX+SYS_NODE_W/2}" y="${dispY+21}" text-anchor="middle" font-size="7" fill="var(--text-2)" font-family="var(--font)">${esc(D.mode||'')}</text>
+  </g>`;
+
+  // 任务节点
+  tasks.forEach(task => {
+    const pos = positions[task.id]; if (!pos) return;
+    const {x,y} = pos;
+    const color = STATUS_COLOR[task.status] || 'var(--text-3)';
+    const bg    = STATUS_BG[task.status]    || 'var(--bg-hover)';
+    const shortId = task.id.length>6 ? task.id.slice(-4) : task.id;
+    const maxChars = Math.max(6, Math.floor(NODE_W*0.18));
+    const label = task.description.slice(0,maxChars) + (task.description.length>maxChars?'…':'');
+    const statusIcon = {pending:'○',claimed:'◉',done:'●'}[task.status]||'○';
+    const hasTag = !!task.icon;
+    const tagColor = task.type==='challenge' ? 'var(--amber)' : 'var(--teal)';
+    const strokeDash = hasTag ? 'stroke-dasharray="3,2"' : '';
+    const nodeStroke = hasTag ? tagColor : color;
+    const emergedMark = task.icon ? ` ${task.icon}` : '';
+    html += `
+      <g title="${esc(task.description)}">
+        <rect x="${x}" y="${y}" width="${NODE_W}" height="${NODE_H}" rx="4" fill="${bg}" stroke="${nodeStroke}" stroke-width="${hasTag?'2':'1.5'}" ${strokeDash}/>
+        <text x="${x+NODE_W/2}" y="${y+11}" text-anchor="middle" font-size="8" font-weight="700" fill="${color}" font-family="var(--font)">${statusIcon} #${shortId}${emergedMark}</text>
+        <text x="${x+NODE_W/2}" y="${y+21}" text-anchor="middle" font-size="7" fill="var(--text-2)" font-family="var(--font)">${esc(label)}</text>
+      </g>`;
+  });
+
+  svg.innerHTML = html;
+}
+
+init();
+</script>
+</body>
+</html>
